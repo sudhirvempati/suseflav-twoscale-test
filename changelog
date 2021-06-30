@@ -1,0 +1,90 @@
+=====================================================================
+SuSeFLAV 1.2.0
+=====================================================================
+June 18, 2012
+=====================================================================
+
+1. Lapack Independent version. 
+
+2. Higgs spectrum updated (Slavich et. al 2-loop)
+
+3. A lot of new examples added. 
+
+=====================================================================
+SuSeFLAV 1.1.4rc
+=====================================================================
+===============
+May 09, 2012
+===============
+
+THE MW, MZ, SIN^2\THETA_W IS REMOVED FORM STDINPUTS.H FILE.
+
+1. SuSemain.f:
+	a) line 642: Lambda_QCD is now calculated for the given mb, alphas
+	values using the function rt.
+	b) tau pole mass is converted to the running mass at MZ scale.
+
+2. OneloopPV.f:
+	a) B0 function is corrected using the zlog function which takes
+	complex double precision argument.
+
+3. ewsbiterate.f:
+	a) 2-loop O(alphas^2, alphas*alphat, ...) thershold corrections
+	to the higgs spectrum is added using the subroutine higgs.
+	b) 2-loop correction to the mu parameter is also added in the
+	iterate subroutine.
+
+4. rgeiterate.f:
+	a) the corrected vev is now fed to the rge running.
+
+5. oneloopgauge.f:
+	a) alpha_em is corrected on its input value, not on the running value.
+	b) alpha_s is corrected on its input value, not on the running value.
+
+===============
+March 27, 2012
+===============
+
+1. oneloopgauge.f:
+	a) fixed the mass ordering in all subroutines.
+	b) line 335 deltagluino definition corrected.
+
+2. oneloopselfenergy.f:
+	a) fixed the mass ordering in pizzt, piwwt.
+
+3. onelooptadpole.f:
+	a) fixed the mass ordering in all subroutines.
+
+4. mssmrge.f:
+	a) added one and two loop option for gauge couplings and gauginos.
+
+5. ewsbiterate.f:
+	a) line 643: corrected the gluino correction addition.
+	b) SWITCHED OFF LINE 1213. CHECK WHETHER IT PLAYS ANY ROLE IN
+	DETERMINING THE UNI SCALE OR NOT ??
+	c) changed the input momentum for mb,mt,mtau from 2X10^-5 to pole masses.
+	d) line 1272: the mt inside log in changed from pole mass to running mass at MZ.
+
+6. rgeiterate.f:
+	a) line 772 and onwards: divided the yukawas by the new vev calculated at mz
+
+7. runrges.f:
+	a) line 299: switched off the SMRGE running.
+	b) changed the h1, hmin, eps value throughout the file.
+	c) In all long iteration the RGEs starts at MZ scale.
+
+9. oneloopfermion.f:
+	a) changed the mass ordering and mt1, mt1 etc def. in the whole file.
+	b) the mt division in all terms of mtcorrection is now mtpole.
+	c) the mb division in all terms of mbcorrection is now mbpole.
+	d) momentum argument for PVs changed to mbpole from 2X10^-5
+	e) line 1406: mtau --> 2X10^-5 (m_\nu)
+	f) line 1436: removed the extra 1/2 factor from the 2nd line.
+	g) the mtau division in all terms of mtaucorrection is now mtaupole.
+
+10. softspectrum.f:
+	a) all the 2X2 diagonalisations gives the eigenvalues in the ascending order.
+
+11. oneloopchargino.f and oneloopneutralino.f:
+	a) fixed the mass ordering in all subroutines.
+=====================================================================
