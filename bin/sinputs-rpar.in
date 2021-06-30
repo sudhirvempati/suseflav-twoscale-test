@@ -1,0 +1,28 @@
+mSUG            # MODEL name
+ 1              # prinstat: 1 = print output, 0 = do not print output
+3.0000E+01      #tanbeta
+2.00000E+02     # m0
+0.0000E+00      # a0
+4.0000E+02      # M1/2
+1.0000E+00      # sgn(mu)
+1.166390E-05    # G_fermi
+127.9340        # alpha_em^(-1)
+ 0.11720        # alpha_strong
+ 9.11876E+01    # mz_pole
+ 2              # one loop or two loops
+ 1              # quark mixing
+ 1              # 1= rhn on; 0 = rhn off
+Rpr             # case: CKM/MNS/USD/Rpr
+ 1.000E-03      # Spectrum Tolerance
+1.7270E+02      # Mtpole
+ 4.23000        # Mbpole
+ 1.77000        # Mtaupole
+1.0000E+06      # MR1 (GeV)
+1.0000E+09      # MR2 (GeV)
+1.0000E+14      # MR3 (GeV)
+0.6123E+00   0.3535E+00   0.7070E+00  # R Matrix(Real in this version)   
+-0.5612E+00   0.8243E+00   0.0739E+00  # Should be orthogonal
+-0.5567E+00   -0.4421E+00   0.7032E+00  # 
+1.0954E-03      # Light neutrino mass eigenvalues (m1 in eV)    
+5.4772E-03      # Light neutrino mass eigenvalues (m2 in eV)    
+4.4721E-02      # Light neutrino mass eigenvalues (m3 in eV)    
