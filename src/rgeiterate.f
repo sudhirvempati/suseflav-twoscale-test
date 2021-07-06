@@ -238,6 +238,19 @@ C--------------------------------------------------------------------------
 
       integer tacsup,tacsdn,tacslp,tacsnu,tachiggs,tact
       integer tacsupz,tacsdnz,tacslpz,tacsnuz,tachiggsz
+!---------------------------------------------------------------------
+!--define by priyanka    
+
+      integer nok,nbad,check
+      double precision MX, tq0, tZ,i0,yy_sm(31),n0,x1,x2,eps,hmin,h1
+      double precision yuMSbar(3,3),ydMSbar(3,3),yeMSbar(3,3),vevMSbar
+      double precision yudiag(3),yddiag(3),UQuMS(3,3),UTUMS(3,3)
+      double precision UQdMS(3,3),UTDMS(3,3),UQdMST(3,3),VCKMMSbar(3,3)
+      double precision alph3MSbar,alph2MSbar,alph1MSbar,alpha2dr
+      double precision g1MS,g2MS,alphemMS,alphemdr,sinthwMS,alpha3dr
+      double precision delrMS,sincorrec,sinthwsqdr,vevdr,deldowndr
+      double precision delupdr,delelecdr,Mtdr,Mcdr,Mudr,Mbdr,Msdr,Mddr
+      double precision Mtaudr,Mmudr,Medr,vevscdr,beta,alpha1dr
 
 !---------------------------------------------
 
@@ -301,6 +314,7 @@ C--------------------------------------------------------------------------
 
 !-------------------------
       EXTERNAL completerun, runtomz,iterate,rewsbcor, coratmz
+      external RK4ROUTINE,QMSRK4,smrge,smrgemt,SVD,dag,matmulti
 !----------------------------------
 
       include 'stdinputs.h'
@@ -324,15 +338,228 @@ C--------------------------------------------------------------------------
       MW = MWpole
       MZ = MZpole
       pi = 4.d0 * datan(1.d0)
+      GF = 1.16639*10.d0**(-5)
+      beta = datan(tanbeta)
       
       if(exitcalc.eq.'F') flags=' AOK'
+!!--------------------------------------------------------------
+!---------------------------------------------------------------
+!modify by priyanka in june 2021
 
-      alph1n = (alphaDR/(4.d0 * pi * (1.d0 - delalphem) * 
-     $     (1.d0 - sinsqtheff))) * (5.d0/3.d0) 
-      alph2n = alphaDR/(4.d0 * pi * (1.d0 - delalphem) * sinsqtheff)
-      alph3n = alph3in/(1.d0 - delalphas) 
+      
+C     ===================================
+C     Running of the Yukawas of the SM !!
+C     ===================================
+      MX = 5.d0*(10.d0**19.d0)
+      tq0   =  dLog(MX**2.d0/msusyold**2.d0)
+      tZ    =  dLog(MX**2.d0/MZ**2.d0)
+C-----------------------------
+C	top Yukawa
+C-----------------------------
+
+      i0 = 0
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = yuin(1,i)
+      yy_sm(i0+3 + i) = yuin(2,i)
+      yy_sm(i0+6 + i) = yuin(3,i)
+      enddo
+
+C-------------------------------
+C	bottom Yukawa
+C-------------------------------
+
+      i0 = 9
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = ydin(1,i)
+      yy_sm(i0+3 + i) = ydin(2,i)
+      yy_sm(i0+6 + i) = ydin(3,i)
+      enddo 
 
 
+C-----------------------------
+C     tau Yukawa
+C-----------------------------
+
+      i0 = 18
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = yein(1,i)
+      yy_sm(i0+3 + i) = yein(2,i)
+      yy_sm(i0+6 + i) = yein(3,i)
+      enddo 
+
+      yy_sm(28) = alph3in
+      yy_sm(29) = alph2in
+      yy_sm(30) = alph1in
+
+      yy_sm(31) = vevin
+
+!--------------------------------------------------------------------------
+!     RUNNING UP THE SM YUKAWAS AND GAUGE COUPLINGS
+!--------------------------------------------------------------------------
+      n0 = 31
+      check=0
+      x2 = tq0
+      x1 = tz
+      h1   =  -1.d-5
+      hmin =  2.d-8
+      eps  =  1.d-6
+         call RK4ROUTINE(yy_sm,n0,x1,x2,eps,h1,hmin,nok,nbad,smrgemt,
+     $        QMSRK4,check)
+         if(check.eq.100)then
+            flags = 'variable underflow '
+            return
+         endif
+
+      i0 = 0
+
+      do i = 1, 3
+      yuMSbar(1,i) = yy_sm(i0 + i)*(4.d0 * pi) 
+      yuMSbar(2,i) = yy_sm(i0+3 + i)*(4.d0 * pi) 
+      yuMSbar(3,i) = yy_sm(i0+6 + i)*(4.d0 * pi) 
+      enddo
+
+C-------------------------------
+C	bottom Yukawa
+C-------------------------------
+
+      i0 = 9
+
+      do i = 1, 3
+      ydMSbar(1,i) = yy_sm(i0 + i)*(4.d0 * pi)    
+      ydMSbar(2,i) = yy_sm(i0+3 + i)*(4.d0 * pi)  
+      ydMSbar(3,i) = yy_sm(i0+6 + i)*(4.d0 * pi)  
+      enddo 
+
+
+C-----------------------------
+C     tau Yukawa
+C-----------------------------
+
+      i0 = 18
+
+      do i = 1, 3
+      yeMSbar(1,i) = yy_sm(i0 + i)*(4.d0 * pi)    
+      yeMSbar(2,i) = yy_sm(i0+3 + i)*(4.d0 * pi)  
+      yeMSbar(3,i) = yy_sm(i0+6 + i)*(4.d0 * pi)  
+      enddo 
+
+      alph3MSbar = yy_sm(28)*(4.d0 * pi)  
+      alph2MSbar = yy_sm(29)*(4.d0 * pi)  
+      alph1MSbar = yy_sm(30)*(4.d0 * pi)  
+
+      vevMSbar = yy_sm(31) 
+      
+      
+      call SVD(3, 3, yuMSbar,3, yudiag, UQuMS,3, UTUMS,3, 0)
+      call SVD(3, 3, ydMSbar,3, yddiag, UQdMS,3, UTDMS,3, 0)
+      
+
+      call dag(UQdMS,UQdTMS)
+      call matmult(UQuMS,UQdTMS,VCKMMSbar)
+      
+!------------------------------------------------------------------------------
+!-----DR conversion of gauge couplings , sinsqthw and vev
+      If(itcount.eq.1)then
+      alpha1dr=alph1MSbar
+      alpha2dr= alph2MSbar/(1.d0-alph2MSbar/(6.d0*pi))
+      alpha3dr= alph3MSbar/(1.d0-alph3MSbar/(4.d0*pi))       
+      
+      g1MS=Sqrt(4.d0*pi*alph1MSbar)
+      g2MS=Sqrt(4.d0*pi*alph2MSbar)
+      alphemMS= ((g1MS*g2MS)**2.d0)/(4.d0*pi*(g1MS**2.d0+g2MS**2.d0))
+      alphemdr=alphemMS/(1.d0-alphemMS/(6.d0*pi))
+      sinthwMS=g1MS/sqrt(g1MS**2.d0+g2MS**2.d0)
+      delrMS=1.d0-pi*alphemMS/(sqrt(2.d0)*GF*MZ*MZ*sinthwMS**2.d0*
+     $ (1.d0-sinthwMS**2.d0))
+      sincorrec=pi*alphemdr/(sqrt(2.d0)*MZ*MZ*GF*(1.d0-delrMS))
+      sinthwsqdr=0.5 -sqrt(0.25 - sincorrec)
+      vevdr= sqrt(MZ*MZ*sinthwsqdr*(1.d0-sinthwsqdr)/(pi*alphemdr))
+            
+!-----------DR conversion of fermion masses-------------------------------------
+      delupdr = 1.d0-alpha3dr/(3.d0*pi)-4.d0*alphemdr/(36.d0*pi)-
+     $          43.d0*alpha3dr**2.d0/(144.d0*pi*pi)      
+      deldowndr = 1.d0-alpha3dr/(3.d0*pi)-1.d0*alphemdr/(36.d0*pi)-
+     $          43.d0*alpha3dr**2.d0/(144.d0*pi*pi)  
+      delelecdr = 1.d0-alphemdr/(4.d0*pi)
+      
+      Mtdr = (yuMSbar(3,3)*vevMSbar/Sqrt(2.d0))*delupdr
+      Mcdr = (yuMSbar(2,2)*vevMSbar/Sqrt(2.d0))*delupdr
+      Mudr = (yuMSbar(1,1)*vevMSbar/Sqrt(2.d0))*delupdr
+      
+      Mbdr = (yddiag(3)*vevMSbar/Sqrt(2.d0))*deldowndr
+      Msdr = (yddiag(2)*vevMSbar/Sqrt(2.d0))*deldowndr
+      Mddr = (yddiag(1)*vevMSbar/Sqrt(2.d0))*deldowndr
+      
+      Mtaudr = (yeMSbar(3,3)*vevMSbar/Sqrt(2.d0))*delelecdr
+      Mmudr = (yeMSbar(2,2)*vevMSbar/Sqrt(2.d0))*delelecdr
+      Medr = (yeMSbar(1,1)*vevMSbar/Sqrt(2.d0))*delelecdr
+      
+      else 
+      
+      
+      
+      
+      
+      
+      endif
+!------define yukawa and gauge couplings at msusy---------------
+      vevscdr=vevdr/sqrt(2.d0)
+ 
+      ydin(1,1) = (VCKMMSbar(1,1)*mDdr)/(4.d0*pi*vevscdr)
+      ydin(1,2) = (VCKMMSbar(1,2)*mSdr)/(4.d0*pi*vevscdr)
+      ydin(1,3) = (VCKMMSbar(1,3)*mBdr)/(4.d0*pi*vevscdr)
+      ydin(2,1) = (VCKMMSbar(2,1)*mDdr)/(4.d0*pi*vevscdr)
+      ydin(2,2) = (VCKMMSbar(2,2)*mSdr)/(4.d0*pi*vevscdr)
+      ydin(2,3) = (VCKMMSbar(2,3)*mBdr)/(4.d0*pi*vevscdr)
+      ydin(3,1) = (VCKMMSbar(3,1)*mDdr)/(4.d0*pi*vevscdr)
+      ydin(3,2) = (VCKMMSbar(3,2)*mSdr)/(4.d0*pi*vevscdr)
+      ydin(3,3) = (VCKMMSbar(3,3)*mBdr)/(4.d0*pi*vevscdr) 
+
+
+      yein(1,1) = mEdr/(4.d0*pi*vevscdr)
+      yein(1,2) = 0.d0
+      yein(1,3) = 0.d0
+      yein(2,1) = 0.d0
+      yein(2,2) = mMUdr/(4.d0*pi*vevscdr)
+      yein(2,3) = 0.d0
+      yein(3,1) = 0.d0
+      yein(3,2) = 0.d0
+      yein(3,3) = mTaudr/(4.d0*pi*vevscdr)
+
+      yuin(1,1) = mUdr/(4.d0*pi*vevscdr)
+      yuin(1,2) = 0.d0
+      yuin(1,3) = 0.d0
+      yuin(2,1) = 0.d0
+      yuin(2,2) = mCdr/(4.d0*pi*vevscdr)
+      yuin(2,3) = 0.d0
+      yuin(3,1) = 0.d0
+      yuin(3,2) = 0.d0
+      yuin(3,3) = MTdr/(4.d0*pi*vevscdr)      
+      
+      vevin = vevdr
+      alph1n = alpha1dr/(4.d0 * pi)
+      alph2n = alpha2dr/(4.d0 * pi)
+      alph3n = alpha3dr/(4.d0 * pi)
+      
+ !---------------------end priyanka correction-------------------------------------------
+      
+      
+      
+      
+      
+!===============================================================================
+!	                 STANDARD MODEL RUNNING ENDS
+!===============================================================================
+!--------------------------------------------------------------
+!      alph1n = (alphaDR/(4.d0 * pi * (1.d0 - delalphem) * 
+!     $     (1.d0 - sinsqtheff))) * (5.d0/3.d0) 
+!      alph2n = alphaDR/(4.d0 * pi * (1.d0 - delalphem) * sinsqtheff)
+!      alph3n = alph3in/(1.d0 - delalphas) 
+
+!            write(*,*)"sinsqtheff",sinsqtheff
 
       if(itcount.eq.1)then
          mtn = MT
@@ -366,6 +593,10 @@ C--------------------------------------------------------------------------
          
       endif
 
+!      call completerun(msusyold,vevin, yuin,ydin,yein,alph1in,
+!     $     alph2in,alph3in,mur,bmur,murge,bmurge,prnstat,check,
+!     $     newtbeta, msusynew, mursq,try,
+!     $     flags,runum,itcount)
 
       call completerun(msusyold,vevin, yuin,ydin,yein,alph1n,
      $     alph2n,alph3n,mur,bmur,murge,bmurge,prnstat,check,
@@ -726,114 +957,262 @@ C     higgs FLAG
 !-----------------------------------------
       msusy = msusyold 
 
-      call runtomz(MX,msusy,mu_conv,bmur_conv,
-     $     murgemz,bmurgemz,newtbetamz,flags)
+!      call runtomz(MX,msusy,mu_conv,bmur_conv,
+!     $     murgemz,bmurgemz,newtbetamz,flags)
 
 
-      if(flags.eq.'variable underflow ')then
-         return
-      endif
+!      if(flags.eq.'variable underflow ')then
+!         return
+!      endif
 
 
-      num = 1
-      if((Sueggz(1).lt.0.d0).OR.(Sueggz(2).lt.0.d0).OR.
-     $     (Sueggz(3).lt.0.d0).OR.(Sueggz(4).lt.0.d0).OR.
-     $     (Sueggz(5).lt.0.d0).OR.(Sueggz(6).lt.0.d0))then
+!      num = 1
+!      if((Sueggz(1).lt.0.d0).OR.(Sueggz(2).lt.0.d0).OR.
+!     $     (Sueggz(3).lt.0.d0).OR.(Sueggz(4).lt.0.d0).OR.
+!     $     (Sueggz(5).lt.0.d0).OR.(Sueggz(6).lt.0.d0))then
 
-         Sueggz(1) = dabs(Sueggz(1))
-         Sueggz(2) = dabs(Sueggz(2))
-         Sueggz(3) = dabs(Sueggz(3))
-         Sueggz(4) = dabs(Sueggz(4))
-         Sueggz(5) = dabs(Sueggz(5))
-         Sueggz(6) = dabs(Sueggz(6))
+!         Sueggz(1) = dabs(Sueggz(1))
+!         Sueggz(2) = dabs(Sueggz(2))
+!         Sueggz(3) = dabs(Sueggz(3))
+!         Sueggz(4) = dabs(Sueggz(4))
+!         Sueggz(5) = dabs(Sueggz(5))
+!         Sueggz(6) = dabs(Sueggz(6))
 
-         tacsupz = 1
+!         tacsupz = 1
 
-      else
+!      else
 
-         continue
-      endif
+!         continue
+!      endif
 
-!-----
-!     Down sector
+!!-----
+!!     Down sector
 
-      if((SDeggz(1).lt.0.d0).OR.(SDeggz(2).lt.0.d0).OR.
-     $     (SDeggz(3).lt.0.d0).OR.(SDeggz(4).lt.0.d0).OR.
-     $     (SDeggz(5).lt.0.d0).OR.(SDeggz(6).lt.0.d0))then
+!      if((SDeggz(1).lt.0.d0).OR.(SDeggz(2).lt.0.d0).OR.
+!     $     (SDeggz(3).lt.0.d0).OR.(SDeggz(4).lt.0.d0).OR.
+!     $     (SDeggz(5).lt.0.d0).OR.(SDeggz(6).lt.0.d0))then
 
-         SDeggz(1) = dabs(SDeggz(1))
-         SDeggz(2) = dabs(SDeggz(2))
-         SDeggz(3) = dabs(SDeggz(3))
-         SDeggz(4) = dabs(SDeggz(4))
-         SDeggz(5) = dabs(SDeggz(5))
-         SDeggz(6) = dabs(SDeggz(6))
-         
-         tacsdnz = 1
-         
-      else
+!         SDeggz(1) = dabs(SDeggz(1))
+!         SDeggz(2) = dabs(SDeggz(2))
+!         SDeggz(3) = dabs(SDeggz(3))
+!         SDeggz(4) = dabs(SDeggz(4))
+!         SDeggz(5) = dabs(SDeggz(5))
+!         SDeggz(6) = dabs(SDeggz(6))
+!         
+!         tacsdnz = 1
+!         
+!      else
 
-         continue
-      endif
+!         continue
+!      endif
 
-!-------
-!     lepton sector
+!!-------
+!!     lepton sector
 
-      if((SLeggz(1).lt.0.d0).OR.(SLeggz(2).lt.0.d0).OR.
-     $     (SLeggz(3).lt.0.d0).OR.(SLeggz(4).lt.0.d0).OR.
-     $     (SLeggz(5).lt.0.d0).OR.(SLeggz(6).lt.0.d0))then
+!      if((SLeggz(1).lt.0.d0).OR.(SLeggz(2).lt.0.d0).OR.
+!     $     (SLeggz(3).lt.0.d0).OR.(SLeggz(4).lt.0.d0).OR.
+!     $     (SLeggz(5).lt.0.d0).OR.(SLeggz(6).lt.0.d0))then
 
-         SLeggz(1) = dabs(SLeggz(1))
-         SLeggz(2) = dabs(SLeggz(2))
-         SLeggz(3) = dabs(SLeggz(3))
-         SLeggz(4) = dabs(SLeggz(4))
-         SLeggz(5) = dabs(SLeggz(5))
-         SLeggz(6) = dabs(SLeggz(6))
+!         SLeggz(1) = dabs(SLeggz(1))
+!         SLeggz(2) = dabs(SLeggz(2))
+!         SLeggz(3) = dabs(SLeggz(3))
+!         SLeggz(4) = dabs(SLeggz(4))
+!         SLeggz(5) = dabs(SLeggz(5))
+!         SLeggz(6) = dabs(SLeggz(6))
 
-         tacslpz = 1
-         
-      else
+!         tacslpz = 1
+!         
+!      else
 
-         continue
-      endif
-!-------------------------
-!     sneutrinos
+!         continue
+!      endif
+!!-------------------------
+!!     sneutrinos
 
-      if((SNeggz(1).lt.0.d0).OR.(SNeggz(2).lt.0.d0).OR.
-     $     (SNeggz(3).lt.0.d0))then
+!      if((SNeggz(1).lt.0.d0).OR.(SNeggz(2).lt.0.d0).OR.
+!     $     (SNeggz(3).lt.0.d0))then
 
-         SNeggz(1) = dabs(SNeggz(1))
-         SNeggz(2) = dabs(SNeggz(2))
-         SNeggz(3) = dabs(SNeggz(3))
-         
-         tacsnuz = 1
-         
-      else
+!         SNeggz(1) = dabs(SNeggz(1))
+!         SNeggz(2) = dabs(SNeggz(2))
+!         SNeggz(3) = dabs(SNeggz(3))
+!         
+!         tacsnuz = 1
+!         
+!      else
 
-         continue
-      endif
+!         continue
+!      endif
 
-!------------------------
-C     higgs FLAG-
-
-
-
-      if(mh0sqz.lt.0.d0.or.mhu0sqz.lt.0.d0.or.mhpmsqz.lt.0.d0.or.
-     $     mA0sqz.lt.0.d0)then
-
-         mh0sqz = dabs(mh0sqz)
-         mhu0sqz = dabs(mhu0sqz)
-         mhpmsqz = dabs(mhpmsqz)
-         mA0sqz  = dabs(mA0sqz)
-         
-         tachiggsz = 1
-
-      else
-         continue
-      ENDIF
+!!------------------------
+!C     higgs FLAG-
 
 
-!      print*,"at MZ",tacsupz,tacsdnz,tacslpz,tacsnuz,tachiggsz
 
+!      if(mh0sqz.lt.0.d0.or.mhu0sqz.lt.0.d0.or.mhpmsqz.lt.0.d0.or.
+!     $     mA0sqz.lt.0.d0)then
+
+!         mh0sqz = dabs(mh0sqz)
+!         mhu0sqz = dabs(mhu0sqz)
+!         mhpmsqz = dabs(mhpmsqz)
+!         mA0sqz  = dabs(mA0sqz)
+!         
+!         tachiggsz = 1
+
+!      else
+!         continue
+!      ENDIF
+
+
+!!      print*,"at MZ",tacsupz,tacsdnz,tacslpz,tacsnuz,tachiggsz
+!---------------------------------------------------------------
+!!!!change by priyanka
+      alph3drbar = alph3*(4.d0 * pi)  
+      alph2drbar = alph2*(4.d0 * pi)  
+      alph1drbar = alph1*(4.d0 * pi)  
+
+!-----DR to MS bar conversion of gauge couplings , sinsqthw and vev
+      alpha2MS= alph2drbar/(1.d0+alph2drbar/(6.d0*pi))
+      alpha3MS= alph3drbar/(1.d0+alph3drbar/(4.d0*pi))       
+      
+      g1MS=Sqrt(4.d0*pi*alpha2MS)
+      g2MS=Sqrt(4.d0*pi*alpha3MS)
+      alphemMS= ((g1MS*g2MS)**2.d0)/(4.d0*pi*(g1MS**2.d0+g2MS**2.d0))
+      sinthwMS=g1MS/sqrt(g1MS**2.d0+g2MS**2.d0)
+      delrMS=1.d0-pi*alphemMS/(sqrt(2.d0)*GF*MZ*MZ*sinthwMS**2.d0*
+     $ (1.d0-sinthwMS**2.d0))
+      sincorrec=pi*alphemMS/(sqrt(2.d0)*MZ*MZ*GF*(1.d0-delrMS))
+      sinthwsqMS=0.5 -sqrt(0.25 - sincorrec)
+      vevMS= sqrt(MZ*MZ*sinthwsqMS*(1.d0-sinthwsqMS)/(pi*alphemMS))
+
+      
+      
+      call SVD(3, 3, yuRG,3, yudrdig, UQudr,3, UTUdr,3, 0)
+      call SVD(3, 3, ydRG,3, yddrdiag, UQddr,3, UTDdr,3, 0)
+      
+
+      call dag(UQddr,UQddrT)
+      call matmult(UQudr,UQdTdr,VCKMdrbar)
+      
+
+!-----------DR conversion of fermion masses-------------------------------------
+      delupdrdown = 1.d0+(alpha3dr/(3.d0*pi)+4.d0*alphemdr/(36.d0*pi)+
+     $          43.d0*alpha3dr**2.d0/(144.d0*pi*pi))      
+      deldowndrdown = 1.d0+alpha3dr/(3.d0*pi)+1.d0*alphemdr/(36.d0*pi)+
+     $          43.d0*alpha3dr**2.d0/(144.d0*pi*pi)  
+      delelecdrdown = 1.d0+alphemdr/(4.d0*pi)
+      
+      MtMS = (yuRG(3,3)*vev2/Sqrt(2.d0))*delupdrdown
+      McMS = (yuRG(2,2)*vev2/Sqrt(2.d0))*delupdrdown
+      MuMS = (yuRG(1,1)*vev2/Sqrt(2.d0))*delupdrdown
+      
+      MbMS = (yddrdiag(3)*vev1/Sqrt(2.d0))*deldowndrdown
+      MsMS = (yddrdiag(2)*vev1/Sqrt(2.d0))*deldowndrdown
+      MdMS = (yddrdiag(1)*vev1/Sqrt(2.d0))*deldowndrdown
+      
+      MtauMS = (yeRG(3,3)*vev1/Sqrt(2.d0))*delelecdrdown
+      MmuMS = (yeRG(2,2)*vev1/Sqrt(2.d0))*delelecdrdown
+      MeMS = (yeRG(1,1)*vev1/Sqrt(2.d0))*delelecdrdown
+      
+
+!------define yukawa and gauge couplings at msusy---------------
+      vevscMS=vevMS/sqrt(2.d0)
+ 
+      ydin(1,1) = (VCKMdrbar(1,1)*mDMS)/(4.d0*pi*vevscMS)
+      ydin(1,2) = (VCKMdrbar(1,2)*mSMS)/(4.d0*pi*vevscMS)
+      ydin(1,3) = (VCKMdrbar(1,3)*mBMS)/(4.d0*pi*vevscMS)
+      ydin(2,1) = (VCKMdrbar(2,1)*mDMS)/(4.d0*pi*vevscMS)
+      ydin(2,2) = (VCKMdrbar(2,2)*mSMS)/(4.d0*pi*vevscMS)
+      ydin(2,3) = (VCKMdrbar(2,3)*mBMS)/(4.d0*pi*vevscMS)
+      ydin(3,1) = (VCKMdrbar(3,1)*mDMS)/(4.d0*pi*vevscMS)
+      ydin(3,2) = (VCKMdrbar(3,2)*mSMS)/(4.d0*pi*vevscMS)
+      ydin(3,3) = (VCKMdrbar(3,3)*mBMS)/(4.d0*pi*vevscMS) 
+
+
+      yein(1,1) = mEMS/(4.d0*pi*vevscMS)
+      yein(1,2) = 0.d0
+      yein(1,3) = 0.d0
+      yein(2,1) = 0.d0
+      yein(2,2) = mMUMS/(4.d0*pi*vevscMS)
+      yein(2,3) = 0.d0
+      yein(3,1) = 0.d0
+      yein(3,2) = 0.d0
+      yein(3,3) = mTauMS/(4.d0*pi*vevscMS)
+
+      yuin(1,1) = mUMS/(4.d0*pi*vevscMS)
+      yuin(1,2) = 0.d0
+      yuin(1,3) = 0.d0
+      yuin(2,1) = 0.d0
+      yuin(2,2) = mCMS/(4.d0*pi*vevscMS)
+      yuin(2,3) = 0.d0
+      yuin(3,1) = 0.d0
+      yuin(3,2) = 0.d0
+      yuin(3,3) = MTMS/(4.d0*pi*vevscMS)      
+      
+
+      tqsusy   =  dLog(MX**2.d0/msusy**2.d0)
+C-----------------------------
+C	top Yukawa
+C-----------------------------
+
+      i0 = 0
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = yuin(1,i)
+      yy_sm(i0+3 + i) = yuin(2,i)
+      yy_sm(i0+6 + i) = yuin(3,i)
+      enddo
+
+C-------------------------------
+C	bottom Yukawa
+C-------------------------------
+
+      i0 = 9
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = ydin(1,i)
+      yy_sm(i0+3 + i) = ydin(2,i)
+      yy_sm(i0+6 + i) = ydin(3,i)
+      enddo 
+
+
+C-----------------------------
+C     tau Yukawa
+C-----------------------------
+
+      i0 = 18
+
+      do i = 1, 3
+      yy_sm(i0 + i)   = yein(1,i)
+      yy_sm(i0+3 + i) = yein(2,i)
+      yy_sm(i0+6 + i) = yein(3,i)
+      enddo 
+
+      yy_sm(28) = alpha3dr/(4.d0 * pi)
+      yy_sm(29) = alpha2dr/(4.d0 * pi)
+      yy_sm(30) = alph1MSbar/(4.d0 * pi)
+      yy_sm(31) = vevMS
+
+!--------------------------------------------------------------------------
+!     RUNNING UP THE SM YUKAWAS AND GAUGE COUPLINGS
+!--------------------------------------------------------------------------
+      n0 = 31
+      check=0
+      x2 = tz
+      x1 = tqsusy
+      h1   =  -1.d-5
+      hmin =  2.d-8
+      eps  =  1.d-6
+         call RK4ROUTINE(yy_sm,n0,x1,x2,eps,h1,hmin,nok,nbad,smrgemt,
+     $        QMSRK4,check)
+         if(check.eq.100)then
+            flags = 'variable underflow '
+            return
+         endif
+
+      mt_mz = yy_sm(9)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
+      mb_mz = yy_sm(18)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
+      mtau_mz = yy_sm(27)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
+!---------------------------------------------------------------
 !-------------------------------------------------
 C     reinitializing one loop correction to SM inputs to zero
 
@@ -842,28 +1221,32 @@ C     reinitializing one loop correction to SM inputs to zero
       mTauc_mz = 0.d0
       delalphas = 0.d0
       delalphem = 0.d0
-      newvev = vevsc*dsqrt(2.d0)
-
-      if((tacsupz+tacsdnz+tacslpz+tacsnuz+tachiggsz).eq.0)then
-
+!      newvev = vevsc*dsqrt(2.d0)
+      newvev = yy_sm(31)
       call coratMZ(sgnmu,MW,MZ,newtbetamz,alphaDR,MWc_mz,MZc_mz,
      $     MTc_mz,mBc_mz,mTauc_mz,alphas1,alphaem,delalphas,
      $     delalphem,sinsqtheff,newvev,mbdrbar,flags)
 
-      else
+!      if((tacsupz+tacsdnz+tacslpz+tacsnuz+tachiggsz).eq.0)then
+
+!      call coratMZ(sgnmu,MW,MZ,newtbetamz,alphaDR,MWc_mz,MZc_mz,
+!     $     MTc_mz,mBc_mz,mTauc_mz,alphas1,alphaem,delalphas,
+!     $     delalphem,sinsqtheff,newvev,mbdrbar,flags)
+
+!      else
 
 
-         flags = "TACSPECMZ"
-         
-!         print*,"Tachyonic Spectrum at MZ"
-         
-         MTc_mz = 0.d0
-         mBc_mz = 0.d0
-         mTauc_mz = 0.d0
-         delalphas = 0.d0
-         delalphem = 0.d0
+!         flags = "TACSPECMZ"
+!         
+!!         print*,"Tachyonic Spectrum at MZ"
+!         
+!         MTc_mz = 0.d0
+!         mBc_mz = 0.d0
+!         mTauc_mz = 0.d0
+!         delalphas = 0.d0
+!         delalphem = 0.d0
 
-      endif
+!      endif
 
 !------------------------------------
 C     itcount  => exit procedure
@@ -924,13 +1307,15 @@ C     itcount  => exit procedure
       alph3no = alph3in/(1.d0 - delalphas) 
 
 
-      mtno = MTpole * (1.d0 + MTc_mz)
+!      mtno = MTpole * (1.d0 + MTc_mz)
+      mtno = MT * (1.d0 + MTc_mz)
 
       mbno = mb / (1.d0 + mBc_mz)
 
 !      mtauno = mtaupole * (1.d0 + mtauc_mz)
 
-      mtauno = mtauMZdrbar * (1.d0 + mtauc_mz)
+!      mtauno = mtauMZdrbar * (1.d0 + mtauc_mz)
+      mtauno = mtau * (1.d0 + mtauc_mz)
 
 c$$$      print*,"mt corr = ", mtno, mtc_mz, mtpole
 c$$$      print*,"mb corr = ", mbno, mbc_mz, mb, mbc_mz
@@ -1010,27 +1395,58 @@ c$$$      print*,"mtau corr = ", mtauno, mtauc_mz, mtaupole
 
 !-----------------------------------
 
-      yuin(1,1) = ((VCKM(1,1)*mUQ)/(4.d0*pi*newvev/dsqrt(2.d0)))
-      yuin(1,2) = (mUQ*VCKM(1,2))/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(1,3) = (VCKM(1,3)*mUQ)/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(2,1) = (mC*VCKM(2,1))/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(2,2) = (mC*VCKM(2,2))/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(2,3) = (mC*VCKM(2,3))/(4.d0*pi*newvev/dsqrt(2.d0))    
-      yuin(3,1) = (MTno*VCKM(3,1))/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(3,2) = (MTno*VCKM(3,2))/(4.d0*pi*newvev/dsqrt(2.d0))
-      yuin(3,3) = (MTno*VCKM(3,3))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(1,1) = ((VCKM(1,1)*mUQ)/(4.d0*pi*newvev/dsqrt(2.d0)))
+!      yuin(1,2) = (mUQ*VCKM(1,2))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(1,3) = (VCKM(1,3)*mUQ)/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(2,1) = (mC*VCKM(2,1))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(2,2) = (mC*VCKM(2,2))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(2,3) = (mC*VCKM(2,3))/(4.d0*pi*newvev/dsqrt(2.d0))    
+!      yuin(3,1) = (MTno*VCKM(3,1))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(3,2) = (MTno*VCKM(3,2))/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yuin(3,3) = (MTno*VCKM(3,3))/(4.d0*pi*newvev/dsqrt(2.d0))
 
 
-      ydin(1,1) = mD/(4.d0*pi*newvev/dsqrt(2.d0))
-      ydin(1,2) = 0.d0
-      ydin(1,3) = 0.d0
-      ydin(2,1) = 0.d0
-      ydin(2,2) = mS/(4.d0*pi*newvev/dsqrt(2.d0))
-      ydin(2,3) = 0.d0
-      ydin(3,1) = 0.d0
-      ydin(3,2) = 0.d0
-      ydin(3,3) = mBno/(4.d0*pi*newvev/dsqrt(2.d0)) 
+!      ydin(1,1) = mD/(4.d0*pi*newvev/dsqrt(2.d0))
+!      ydin(1,2) = 0.d0
+!      ydin(1,3) = 0.d0
+!      ydin(2,1) = 0.d0
+!      ydin(2,2) = mS/(4.d0*pi*newvev/dsqrt(2.d0))
+!      ydin(2,3) = 0.d0
+!      ydin(3,1) = 0.d0
+!      ydin(3,2) = 0.d0
+!      ydin(3,3) = mBno/(4.d0*pi*newvev/dsqrt(2.d0)) 
 
+
+!      yein(1,1) = mE/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yein(1,2) = 0.d0
+!      yein(1,3) = 0.d0
+!      yein(2,1) = 0.d0
+!      yein(2,2) = mMU/(4.d0*pi*newvev/dsqrt(2.d0))
+!      yein(2,3) = 0.d0
+!      yein(3,1) = 0.d0
+!      yein(3,2) = 0.d0
+!      yein(3,3) = mtauno/(4.d0*pi*newvev/dsqrt(2.d0))
+
+      yuin(1,1) = mUQ/(4.d0*pi*newvev/dsqrt(2.d0))
+      yuin(1,2) = 0.d0
+      yuin(1,3) = 0.d0
+      yuin(2,1) = 0.d0
+      yuin(2,2) = mC/(4.d0*pi*newvev/dsqrt(2.d0))
+      yuin(2,3) = 0.d0    
+      yuin(3,1) = 0.d0
+      yuin(3,2) = 0.d0
+      yuin(3,3) = MTno/(4.d0*pi*newvev/dsqrt(2.d0))
+
+
+      ydin(1,1) = (VCKM(1,1)*mD)/(4.d0*pi*newvev/dsqrt(2.d0))
+      ydin(1,2) = (VCKM(1,2)*mS)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(1,3) = (VCKM(1,3)*mBno)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(2,1) = (VCKM(2,1)*mD)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(2,2) = (VCKM(2,2)*mS)/(4.d0*pi*newvev/dsqrt(2.d0))
+      ydin(2,3) = (VCKM(2,3)*mBno)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(3,1) = (VCKM(3,1)*mD)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(3,2) = (VCKM(3,2)*mS)/(4.d0*pi*newvev/dsqrt(2.d0)) 
+      ydin(3,3) = (VCKM(3,3)*mBno)/(4.d0*pi*newvev/dsqrt(2.d0)) 
 
       yein(1,1) = mE/(4.d0*pi*newvev/dsqrt(2.d0))
       yein(1,2) = 0.d0

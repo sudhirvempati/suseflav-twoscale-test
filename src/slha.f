@@ -1039,7 +1039,7 @@ c ----------------------------- c
       write(lhaout,52) 48,dsqrt(mSDRG(2,2)),'M_sR'
       write(lhaout,52) 49,dsqrt(mSDRG(3,3)),'M_bR'
 
-      if(rhn.eq.1)then
+      if(rhn.eq.1 .or. model.eq.'CNUM')then
          write(lhaout,105)
          write(lhaout,108) 'MSQ2 Q=',scale,'M^2_Q soft SUSY breaking', 
      $        ' masses'
@@ -1091,7 +1091,12 @@ c ----------------------------- c
          write(lhaout,53) 3,1,mSLRG(3,1),'mSLRG_31'
          write(lhaout,53) 3,2,mSLRG(3,2),'mSLRG_32'
          write(lhaout,53) 3,3,mSLRG(3,3),'mSLRG_33'
-
+      write(lhaout,*)AERG(3,3)*yeRG(3,3)*vev1n/dsqrt(2.d0)-mTAU*sgnmu*
+     $              murge*tanbeta
+      write(lhaout,*)AERG(2,2)*yeRG(2,2)*vev1n/dsqrt(2.d0)-mMU*sgnmu*
+     $                murge*tanbeta
+      write(lhaout,*)AERG(1,1)*yeRG(1,1)*vev1n/dsqrt(2.d0)-mE*sgnmu*
+     $               murge*tanbeta
          write(lhaout,105)
          write(lhaout,108) 'MSE2 Q=',scale,'M^2_E soft SUSY breaking',
      $        ' masses'

@@ -571,6 +571,23 @@ C      open(999,FILE=trim(cwd)//'/../'//'/output.txt',status='replace')
 
       open(999,FILE= '../tmp/output.txt',status='replace')
 
+      open(111,FILE= '../tmp/check1.txt',status='replace')
+      open(112,FILE= '../tmp/check2.txt',status='replace')
+      open(113,FILE= '../tmp/check3.txt',status='replace')
+      open(114,FILE= '../tmp/check4.txt',status='replace')
+!      open(115,FILE= '../tmp/check5.txt',status='replace')
+!      open(116,FILE= '../tmp/check6.txt',status='replace')
+!      open(117,FILE= '../tmp/check7.txt',status='replace')
+!      open(118,FILE= '../tmp/check8.txt',status='replace')
+      open(119,FILE= '../tmp/check9.txt',status='replace')
+!      open(120,FILE= '../tmp/check10.txt',status='replace')
+      open(121,FILE= '../tmp/check11.txt',status='replace')
+      open(122,FILE= '../tmp/check12.txt',status='replace')
+      open(123,FILE= '../tmp/check13.txt',status='replace')
+      open(124,FILE= '../tmp/check14.txt',status='replace')
+      open(125,FILE= '../tmp/check15.txt',status='replace')
+      open(126,FILE= '../tmp/check16.txt',status='replace')
+
       if(prnstat.eq.1)then
          open(10,FILE='suseflav.out',access='append',status='replace')
       endif
@@ -856,6 +873,23 @@ C         print*,"--------------------------------------------------"
       
 
       close(999)
+      close(111)
+      close(112)
+      close(113)
+      close(114)
+!      close(115)
+!      close(116)
+!      close(117)
+!      close(118)
+      close(119)
+!      close(120)
+      close(121)
+      close(122)
+      close(123)
+      close(124)
+      close(125)
+      close(126)
+
 
       if(prnstat.eq.1)then
          close(10)

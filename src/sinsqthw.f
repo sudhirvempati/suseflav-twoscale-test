@@ -127,7 +127,7 @@ C****C
       END
 !-----------------------------------------------------------------------
 
-      RECURSIVE SUBROUTINE S2ThetaW(q,g,gp,Neg,Ceg,SLegg,SNegg,ON,OCL,
+      RECURSIVE SUBROUTINE S2ThetaWSM(q,g,gp,Neg,Ceg,SLegg,SNegg,ON,OCL,
      $     OCR,sinthwold, rhold, delalphhat, 
      $     alphaMZ, pizzTMZ, piwwTMW, piwwT0, mh0sq,trysinsq,flags2tw)
 
@@ -199,11 +199,13 @@ C****C
      $     (dcos(alphaMZ)/ dsin(datan(tanbeta)))**2.d0 *
      $     (1 - delr1)*rhonew
 
-      delr = delr1 + delr2 + deltavtot + deltaztot + 
-     $     DELTAVB1(alphhat,rhonew,sinthwold**2.d0,
-     $     (1.d0 - (MW*MW)/(MZ*MZ)))
+!      delr = delr1 + delr2 + deltavtot + deltaztot + 
+!     $     DELTAVB1(alphhat,rhonew,sinthwold**2.d0,
+!     $     (1.d0 - (MW*MW)/(MZ*MZ)))
 
- 
+      delr = delr1 + delr2 + 
+     $     DELTAVB1(alphhat,rhonew,sinthwold**2.d0,
+     $     (1.d0 - (MW*MW)/(MZ*MZ))) 
 
 
       sinthw_cor = dsqrt((1.d0 - (dsqrt(1.d0 - (4.d0 * pi * alphhat/
@@ -249,7 +251,7 @@ C****C
       sinthwold = sinthw_cor
       trysinsq = trysinsq + 1
       rhold = rhonew
-      call S2ThetaW(q,g,gp,Neg,Ceg,SLegg,SNegg,ON,OCL,
+      call S2ThetaWSM(q,g,gp,Neg,Ceg,SLegg,SNegg,ON,OCL,
      $     OCR,sinthwold, rhold, delalphhat, 
      $     alphaMZ, pizzTMZ, piwwTMW, piwwT0, mh0sq,trysinsq,flags2tw)
 

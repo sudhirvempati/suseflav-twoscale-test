@@ -176,6 +176,18 @@ C---------------------------------------------------------------------------
      $     mnu33
       DOUBLE PRECISION Mg1,Mg2,Mg3
 C-------------------------------------  
+      DOUBLE PRECISION a0u11,a0u12,a0u13,a0u21,a0u22,a0u23,a0u31,a0u32,
+     $     a0u33
+
+      DOUBLE PRECISION a0d11,a0d12,a0d13,a0d21,a0d22,a0d23,a0d31,a0d32,
+     $     a0d33
+
+      DOUBLE PRECISION a0e11,a0e12,a0e13,a0e21,a0e22,a0e23,a0e31,a0e32,
+     $     a0e33
+
+      DOUBLE PRECISION a0nu11,a0nu12,a0nu13,a0nu21,a0nu22,a0nu23,
+     $     a0nu31,a0nu32,a0nu33
+!----------------------------------------
 
 
       double precision SUegz(6),SDegz(6),SLegz(6),SNegz(3)
@@ -213,6 +225,9 @@ C-------------------------------------
       double precision SNegvd(3),USNvd(3,3),MWsqpole_MZ
       double precision MWpole, MZpole,sinsqtw,MW,MZ,pi
 
+      double precision halfppil(3),halfpetal(3),halfpkl(3),halfpipnu(3)
+      double precision halfpkpnu(3)
+
       double precision mTaupoledrbar,mTauMZmsbar
 
       double precision mgrav
@@ -220,7 +235,8 @@ C-------------------------------------
       real MHL,MHH,MHA,MG,MB1,MB2,AAB,MT1,MT2,AAT,MU,M2,
      $     ALPHAH,MSL,MCL,BRBS,BRBD,thetati,thetabi,mtisa,tbisa
 
-
+      double precision deltaLR12,deltaRL12,a7,mqtilsq,deltaLL12,
+     $         deltaRR12,deltaELR12,deltaERL12,deltaELL12,deltaERR12
 !---VCM parameters
       
       integer qmix
@@ -230,19 +246,46 @@ C-------------------------------------
 
       complex*8 VCKMW(3,3),Imag
       double precision lckm,Ackm,rhockm,etackm,rhobckm,etabckm
-        
+      double precision deltaLL13,deltaRR13,deltaERR13
+
+      DOUBLE PRECISION CRLddunu123,CRLddunu121,CRLddunuG123,
+     $  CRLddunuG121,CRLuddnu123,CRLuddnu121,CRLuddnuG123,CRLuddnuG121,
+     $  CRLuddnuchipm123,CRLuddnuchipm121,CLLuddnu123,CLLuddnu121,
+     $  CLLuddnuG123,CLLuddnuG121,CLLuddnuchipm123,CLLuddnuchipm121,
+     $ CRLddunuchi0123,CRLddunuchi0121,CRLuddnuchi0123,CRLuddnuchi0121,
+     $  CLLuddnuchi0123,CLLuddnuchi0121,CRLuddnu213,CRLuddnu211,
+     $  CRLuddnuG213,CRLuddnuG211,CRLuddnuchipm213,CRLuddnuchipm211,
+     $  CLLuddnu213,CLLuddnu211,CLLuddnuG213,CLLuddnuG211,
+     $  CLLuddnuchipm213,CLLuddnuchipm211,CRLuddnuchi0211,
+     $  CRLuddnuchi0213,CLLuddnuchi0213,CLLuddnuchi0211,tautotal,etotal
+
+      DOUBLE PRECISION ALppil1,ARppil1,CRLudul11,CRLudulG11,
+     $  CRLudulchipm11,CRLudulchi011,CLLudul11,CLLudulG11,
+     $  CLLudulchipm11,CLLudulchi011,CRRudul11,CRRudulG11,
+     $  CRRudulchipm11,CRRudulchi011,CLRudul11,CLRudulG11,
+     $  CLRudulchipm11,CLRudulchi011
+
+      DOUBLE PRECISION halfppil6d(3),halfpetal6d(3),halfpkl6d(3),
+     $   halfpipnu6d(3),halfpkpnu6d(3),
+     $  halfpipnu6dfull,halfpkpnu6dfull,halfppiepure6d,halfppimupure6d,
+     $  halfppipnuepure6d,halfknuepure6d,halfpknumupure6d,
+     $  halfpknupure6d,halfpk0epure6d,halfpk0mupure6d,halfpipnufull,
+     $  halfpkpnufull
+       
       common/VCKMparam/ VCKM
         
 !---R parametrizastion
 
       Double precision DM(3,3),R(3,3),Dk(3,3),UPMNST(3,3),
-     $     drd(3,3),UPMNS(3,3)
+     $     drd(3,3),UPMNS(3,3),e1,yukgut(126)
 
       double precision thl12,thl23,thl13,UPMNSR(3,3)
 
 
       integer tacsup,tasdn,tacslp,tacsnu,tachiggs
       integer tacsupz,tacsdnz,tacslpz,tacsnuz,tachiggsz
+
+      double precision alphin1Mz, alphin2Mz,alphin3Mz 
 
       
       common/rpar/ DM,R,Dk
@@ -330,17 +373,53 @@ C-------------------------------------
 
       common/m32/mgrav
 
+      common/unif/ e1,yukgut
+
 !--------
 
       common/higgs2loop/ mh0sqcor,mhu0sqcor,mA0sqcor,mHpmsqcor
 
+!-------non universal A terms
 
+      common/nuaterms/a0u11,a0u12,a0u13,a0u21,a0u22,a0u23,a0u31,a0u32,
+     $     a0u33,a0d11,a0d12,a0d13,a0d21,a0d22,a0d23,a0d31,a0d32,
+     $     a0d33,a0e11,a0e12,a0e13,a0e21,a0e22,a0e23,a0e31,a0e32,
+     $     a0e33,a0nu11,a0nu12,a0nu13,a0nu21,a0nu22,a0nu23,
+     $     a0nu31,a0nu32,a0nu33
 !--------------------
+
+
+      common/gluino_chargino/CRLddunu123,CRLddunu121,CRLddunuG123,
+     $  CRLddunuG121,CRLuddnu123,CRLuddnu121,CRLuddnuG123,CRLuddnuG121,
+     $  CRLuddnuchipm123,CRLuddnuchipm121,CLLuddnu123,CLLuddnu121,
+     $  CLLuddnuG123,CLLuddnuG121,CLLuddnuchipm123,CLLuddnuchipm121,
+     $ CRLddunuchi0123,CRLddunuchi0121,CRLuddnuchi0123,CRLuddnuchi0121,
+     $  CLLuddnuchi0123,CLLuddnuchi0121,CRLuddnu213,CRLuddnu211,
+     $  CRLuddnuG213,CRLuddnuG211,CRLuddnuchipm213,CRLuddnuchipm211,
+     $  CLLuddnu213,CLLuddnu211,CLLuddnuG213,CLLuddnuG211,
+     $  CLLuddnuchipm213,CLLuddnuchipm211,CRLuddnuchi0211,
+     $  CRLuddnuchi0213,CLLuddnuchi0213,CLLuddnuchi0211,tautotal,etotal
+
+      common/pgoespi0e_plus/ALppil1,ARppil1,CRLudul11,CRLudulG11,
+     $  CRLudulchipm11,CRLudulchi011,CLLudul11,CLLudulG11,
+     $  CLLudulchipm11,CLLudulchi011,CRRudul11,CRRudulG11,
+     $  CRRudulchipm11,CRRudulchi011,CLRudul11,CLRudulG11,
+     $  CLRudulchipm11,CLRudulchi011
+
+      common/protondecay_6d/halfppil6d,halfpetal6d,halfpkl6d,
+     $   halfpipnu6d,halfpkpnu6d,
+     $  halfpipnu6dfull,halfpkpnu6dfull,halfppiepure6d,halfppimupure6d,
+     $  halfppipnuepure6d,halfknuepure6d,halfpknumupure6d,
+     $  halfpknupure6d,halfpk0epure6d,halfpk0mupure6d,halfpipnufull,
+     $  halfpkpnufull
+
+!------------------------
       real tstart(2)            
       DOUBLE PRECISION total              ! For receiving total time
       
 !-----------------------------------------------
       external  rgeit,gmsb,printslha,dag,matmult,mat3prod
+      external  Proton_goto,printslha2
 !---------------------------------------------
 
 C     WARNING: stdinputs MUST be AFTER all other declarations, 
@@ -541,7 +620,7 @@ c$$$  write(*,*) ''
 !      print*,"mzpole = ", mzpole
 
       pi = 4.d0*datan(1.d0)
-      sinsqtw = 0.2221d0
+      sinsqtw = 0.231d0
       stw = dsqrt(sinsqtw)
       ctw = dsqrt(1.d0 - sinsqtw)
       MWpole = MZpole * ctw
@@ -570,18 +649,27 @@ c$$$      print*,"alpha2 = ", alphaemMZdrbar
 !     Top,tau masses  -  Pole mass to DRbar 
 !----------------------------------------------------------------
 
-      DeltaTZ = 2.d0 * dLog(Mtpole/MZ)
+!      DeltaTZ = 2.d0 * dLog(Mtpole/MZ)
 
-      alphasmt = alphsMZdrbar /(1.d0+3.d0*alphsMZdrbar*
-     $     DeltaTZ/(4.d0* Pi))
+!      alphasmt = alphsMZdrbar /(1.d0+3.d0*alphsMZdrbar*
+!     $     DeltaTZ/(4.d0* Pi))
 
-      MT = Mtpole * (1.d0 -                                            !<---check expression.
-     $     (alphasmt * (5.d0 - 3.d0 * DeltaTZ)/(3.d0*Pi)) -
-     $     (alphasmt**2.d0) * (0.538d0 - 43.d0 * DeltaTZ/(24.d0 * pi*pi)
-     $     + (3.d0 * (DeltaTZ**2.d0)/(8.d0 * pi * pi))))
+!      MT = Mtpole * (1.d0 -                                            !<---check expression.
+!     $     (alphasmt * (5.d0 - 3.d0 * DeltaTZ)/(3.d0*Pi)) -
+!     $     (alphasmt**2.d0) * (0.538d0 - 43.d0 * DeltaTZ/(24.d0 * pi*pi)
+!     $     + (3.d0 * (DeltaTZ**2.d0)/(8.d0 * pi * pi))))
 
 
-!------------------------------
+!!------------------------------
+!corrected by priyanka from paper 1703.03267v2 and 9803493
+      DeltaTZ = dLog(Mtpole/MZ)
+      MT= Mtpole *(1.d0+1/(16.d0*pi**2.0)*((16.d0*pi*alph/9.d0-
+     $     16.d0*pi*alphas/3.d0)*(4.d0+DeltaTZ))-1.d0/(16.d0*pi**2.d0)*
+     $     (alphas**2.d0/18.d0)*(2821.0+2028.0*DeltaTZ+
+     $      396.0*DeltaTZ**2.d0+16.0*pi**2.d0*(1.d0+2.d0*DeltaTZ)
+     $      -48.0*1.202057))
+
+!--------------------------------
 
       mTaupoledrbar = mTaupole * (1.d0 - (3.d0/32.d0) * (alph1tz - 
      $     alphaemMZdrbar/1.d0))
@@ -667,8 +755,10 @@ c$$$      print*,"mt = ", mT,mtpole
 c$$$      print*,"mtau = ",  mTauMZdrbar,mtaupole
       
       mTatMZ = MT               ! storing the value for later use
-      mb = mbMZdrbar
-      mTau = mTauMZdrbar
+!      mb = mbMZdrbar
+      mb= mbMZmsbar
+!      mTau = mTauMZdrbar
+      mTau= mTauMZmsbar
 
 !---------------------------------------------------------------------------
 !     ANGLES AND CKM MATRICES
@@ -796,8 +886,14 @@ c$$$      enddo wolckm
 
 c$$$      vevin =  246.d0 
 
-      vevin =  dsqrt(MZ*MZ/((alphaemMZdrbar + 
-     $     (alph1tz * (3.d0/5.d0)))*pi))
+!      vevin =  dsqrt(MZ*MZ/((alphaemMZdrbar + 
+!     $     (alph1tz * (3.d0/5.d0)))*pi))
+
+!--------------------------------------
+!corrected by priyanka
+      vevin =  dsqrt(MZ*MZ*(((1-sinsqtw)*sinsqtw)/(pi*alph)))
+
+!--------------------------------------
 
 c$$$      print*,'vev from g', dsqrt(MZ*MZ/((alphaemMZdrbar + 
 c$$$     $     (alph1tz * (3.d0/5.d0)))*pi))
@@ -809,15 +905,25 @@ c$$$     $     (alph1tz * (3.d0/5.d0)))*pi))
       vev1sc = vev1in/dsqrt(2.d0)
       vev2sc = vev2in/dsqrt(2.d0)
 
-      ydin(1,1) = mD/(4.d0*pi*vevsc)
-      ydin(1,2) = 0.d0
-      ydin(1,3) = 0.d0
-      ydin(2,1) = 0.d0
-      ydin(2,2) = mS/(4.d0*pi*vevsc)
-      ydin(2,3) = 0.d0
-      ydin(3,1) = 0.d0
-      ydin(3,2) = 0.d0
-      ydin(3,3) = mB/(4.d0*pi*vevsc) 
+      ydin(1,1) = (VCKM(1,1)*mD)/(4.d0*pi*vevsc)
+      ydin(1,2) = (VCKM(1,2)*mS)/(4.d0*pi*vevsc)
+      ydin(1,3) = (VCKM(1,3)*mB)/(4.d0*pi*vevsc)
+      ydin(2,1) = (VCKM(2,1)*mD)/(4.d0*pi*vevsc)
+      ydin(2,2) = (VCKM(2,2)*mS)/(4.d0*pi*vevsc)
+      ydin(2,3) = (VCKM(2,3)*mB)/(4.d0*pi*vevsc)
+      ydin(3,1) = (VCKM(3,1)*mD)/(4.d0*pi*vevsc)
+      ydin(3,2) = (VCKM(3,2)*mS)/(4.d0*pi*vevsc)
+      ydin(3,3) = (VCKM(3,3)*mB)/(4.d0*pi*vevsc) 
+
+!      ydin(1,1) = mD/(4.d0*pi*vevsc)
+!      ydin(1,2) = 0.d0
+!      ydin(1,3) = 0.d0
+!      ydin(2,1) = 0.d0
+!      ydin(2,2) = mS/(4.d0*pi*vevsc)
+!      ydin(2,3) = 0.d0
+!      ydin(3,1) = 0.d0
+!      ydin(3,2) = 0.d0
+!      ydin(3,3) = mB/(4.d0*pi*vevsc) 
 
       yein(1,1) = mE/(4.d0*pi*vevsc)
       yein(1,2) = 0.d0
@@ -829,25 +935,52 @@ c$$$     $     (alph1tz * (3.d0/5.d0)))*pi))
       yein(3,2) = 0.d0
       yein(3,3) = mTau/(4.d0*pi*vevsc)
 
-      yuin(1,1) = (mUQ*VCKM(1,1))/(4.d0*pi*vevsc)
-      yuin(1,2) = (mUQ*VCKM(1,2))/(4.d0*pi*vevsc)
-      yuin(1,3) = (mUQ*VCKM(1,3))/(4.d0*pi*vevsc)
-      yuin(2,1) = (mC*VCKM(2,1))/(4.d0*pi*vevsc)
-      yuin(2,2) = (mC*VCKM(2,2))/(4.d0*pi*vevsc)
-      yuin(2,3) = (mC*VCKM(2,3))/(4.d0*pi*vevsc)
+      yuin(1,1) = mUQ/(4.d0*pi*vevsc)
+      yuin(1,2) = 0.d0
+      yuin(1,3) = 0.d0
+      yuin(2,1) = 0.d0
+      yuin(2,2) = mC/(4.d0*pi*vevsc)
+      yuin(2,3) = 0.d0
+      yuin(3,1) = 0.d0
+      yuin(3,2) = 0.d0
+      yuin(3,3) = MT/(4.d0*pi*vevsc)
+
+!      yuin(1,1) = (mUQ*VCKM(1,1))/(4.d0*pi*vevsc)
+!      yuin(1,2) = (mUQ*VCKM(1,2))/(4.d0*pi*vevsc)
+!      yuin(1,3) = (mUQ*VCKM(1,3))/(4.d0*pi*vevsc)
+!      yuin(2,1) = (mC*VCKM(2,1))/(4.d0*pi*vevsc)
+!      yuin(2,2) = (mC*VCKM(2,2))/(4.d0*pi*vevsc)
+!      yuin(2,3) = (mC*VCKM(2,3))/(4.d0*pi*vevsc)
 
 c$$$      yuin(3,1) = (MTpole*VCKM(3,1))/(4.d0*pi*vevsc)
 c$$$      yuin(3,2) = (MTpole*VCKM(3,2))/(4.d0*pi*vevsc)
 c$$$      yuin(3,3) = (MTpole*VCKM(3,3))/(4.d0*pi*vevsc)
 
-      yuin(3,1) = (MT*VCKM(3,1))/(4.d0*pi*vevsc)
-      yuin(3,2) = (MT*VCKM(3,2))/(4.d0*pi*vevsc)
-      yuin(3,3) = (MT*VCKM(3,3))/(4.d0*pi*vevsc)
+!      yuin(3,1) = (MT*VCKM(3,1))/(4.d0*pi*vevsc)
+!      yuin(3,2) = (MT*VCKM(3,2))/(4.d0*pi*vevsc)
+!      yuin(3,3) = (MT*VCKM(3,3))/(4.d0*pi*vevsc)
 
-      alph3in = alphsMZdrbar/(4.d0 * pi)   !alph3tz
-      alph2in = alphaemMZdrbar/(4.d0 * pi) !alph2tz
-      alph1in = alph1tz/(4.d0 * pi)
 
+!      alph3in = alphsMZdrbar/(4.d0 * pi)   !alph3tz
+!      alph2in = alphaemMZdrbar/(4.d0 * pi) !alph2tz
+!      alph1in = alph1tz/(4.d0 * pi)
+
+!-------------------------------------------------------
+!corrected by priyanka ..SM thresholds are added here
+
+      alph1in= (5.d0/3.d0)*alph/(ctw**2.d0*(4.d0 * pi))
+      alph2in= alph/(sinsqtw*(4.d0 * pi))
+      alph3in= alphas/(4.d0 * pi)
+
+!      alph3in = 2.d0*pi*alphin3Mz/(2.d0*pi+alphin3Mz*(2.d0/3.d0)*
+!     $          log(Mtpole/Mz))
+!      alph2in = 2.d0*pi*alphin2Mz/(2.d0*pi+alphin2Mz*(log(Mtpole/Mz)+
+!     $          (1.d0/6.d0)*log(125.35/Mz)))
+!      alph1in = 2.d0*pi*alphin1Mz/(2.d0*pi+alphin1Mz*
+!     $          ((17.d0/30.d0)*log(Mtpole/Mz)
+!     $          +(1.d0/6.d0)*log(125.35/Mz)))
+
+!--------------------------------------------------------
 c$$$      print*,"yuin(3,3) = ", yuin(3,3)*4.d0*pi/(dsin(beta)),mt/(vev2sc),
 c$$$     $     yuin(3,3),mt
 c$$$      print*,"ydin(3,3) = ", ydin(3,3)*4.d0*pi/(dcos(beta))
@@ -1761,6 +1894,14 @@ C     if prnstat writes
      $     mh0sq,mHu0sq,mA0sq,mhpmsq,SUegg,SDegg,SLegg,
      $     SNegg,Neg,Ceg,mSQRG,mSURG,mSDRG,mSLRG,mSERG,
      $     USL,ftmz,ftmt,MWsqpole_MZ)
+
+      call printslha2(errge,flags,msusyold,mur,mAm3,
+     $     MT,mb,mtau,MW,MZ,mh1mz,mh2mz,yuRG,ydRG,yeRG,
+     $     AURG,ADRG,AERG,ONm,OCLTm,OCRm,alph3,alph2,alph1,
+     $     M1tz,M2tz,M3tz,M3t,thetat,thetab,thetatau,
+     $     mh0sq,mHu0sq,mA0sq,mhpmsq,SUegg,SDegg,SLegg,
+     $     SNegg,Neg,Ceg,mSQRG,mSURG,mSDRG,mSLRG,mSERG,
+     $     USL,ftmz,ftmt,MWsqpole_MZ) 
       
       else specok
 
@@ -1779,14 +1920,26 @@ C     if prnstat writes
          
          WRITE(999,84) tanbeta,m0, m12,a0,m10,m20,mh0sq,
      $        gm2,Bbsg,bmeg,btmug,bteg,brmu3e,brtau3mu,brtau3e,flags
+         
+      else if(model.eq.'CNUM')then
+         
+         WRITE(999,85) tanbeta,mq11, mg1,a0u11,m10,m20,mh0sq,
+     $        gm2,Bbsg,bmeg,btmug,bteg,brmu3e,brtau3mu,brtau3e,flags
 
       endif optsp
-      
+!         a0gut=a0u11
       if(model.eq.'mSUG') then 
 C         write(iunit,97) tanbeta,m0,m12,a0,flags
          write(iunit,87) "flag for the point is",flags
          if(prnstat.eq.1)then
 C            write(10,97) tanbeta,m0,m12,a0,flags
+         write(10,87) "flag for the point is",flags
+         endif
+      else if(model.eq.'CNUM') then
+C         write(iunit,972) tanbeta,m0,m12,a0,m10,m20,flags
+         write(iunit,87) "flag for the point is",flags
+         if(prnstat.eq.1)then
+C            write(10,972) tanbeta,m0,m12,a0,m10,m20,flags
          write(10,87) "flag for the point is",flags
          endif
       else if(model.eq.'NUHM') then
@@ -1856,6 +2009,134 @@ C      write(iunit,97) tanbeta,m0,m12,a0,flags
 C         write(10,97) tanbeta,m0,m12,a0,flags
          write(10,87) "flag for the point is",flags
       endif
+
+      else if(model.eq.'CNUM')then
+
+ 85      format(15(1pE15.5,2x),2x,G8.0)
+ 77      FORMAT(6(1pE11.4,2x),A)
+ 78      FORMAT(6(1pE11.4,2x))
+ 79      FORMAT(7(1pE11.4,2x))
+      call printslha2(errge,flags,msusyold,mur,mAm3,
+     $     MT,mb,mtau,MW,MZ,mh1mz,mh2mz,yuRG,ydRG,yeRG,
+     $     AURG,ADRG,AERG,ONm,OCLTm,OCRm,alph3,alph2,alph1,
+     $     M1tz,M2tz,M3tz,M3t,thetat,thetab,thetatau,
+     $     mh0sq,mHu0sq,mA0sq,mhpmsq,SUegg,SDegg,SLegg,
+     $     SNegg,Neg,Ceg,mSQRG,mSURG,mSDRG,mSLRG,mSERG,
+     $     USL,ftmz,ftmt,MWsqpole_MZ) 
+      call Proton_goto(tanbeta,msusyold,e1,yukgut,mSQRG,mSURG,
+     $           yuRG,AURG,mSDRG,ydRG,ADRG,mSLRG,mSERG,yeRG,AERG,Mchar,
+     $           MNeut,M1tz,M2tz,mur,vev1,vev2,M3t,check,halfppil,
+     $           halfpetal,halfpkl,halfpipnu,halfpkpnu)
+!      Write(*,*)halfppil(3),halfpetal(3),halfpkl(3),
+!     $          halfpipnu(3),halfpkpnu(3)
+
+      a7= alph3*4.d0*pi
+      mqtilsq=(mSQRG(1,1)+mSQRG(2,2)+mSDRG(1,1)+mSDRG(2,2))/4.d0
+      deltaLL12=mSQRG(1,2)/Sqrt(mSQRG(1,1)*mSQRG(2,2))
+      deltaRR12=mSDRG(1,2)/Sqrt(mSDRG(1,1)*mSDRG(2,2))
+      deltaLR12=ADRG(1,2)/Sqrt(mSQRG(1,1)*mSDRG(2,2))
+      deltaRL12=ADRG(1,2)/Sqrt(mSDRG(1,1)*mSQRG(2,2))
+  
+      deltaELL12=mSLRG(1,2)/Sqrt(mSLRG(1,1)*mSLRG(2,2))
+      deltaERR12=mSERG(1,2)/Sqrt(mSERG(1,1)*mSERG(2,2))
+      deltaELR12=AERG(1,2)/Sqrt(mSLRG(1,1)*mSERG(2,2))
+      deltaERL12=AERG(1,2)/Sqrt(mSERG(1,1)*mSLRG(2,2))
+
+      deltaLL13=mSQRG(1,3)/Sqrt(mSQRG(1,1)*mSQRG(3,3))
+      deltaRR13=mSURG(1,3)/Sqrt(mSURG(1,1)*mSURG(3,3))
+      deltaERR13=mSERG(1,3)/Sqrt(mSERG(1,1)*mSERG(3,3))
+
+         WRITE(999,85) tanbeta,mq11, mg1,a0u11,m10,m20,mh0sq,
+     $        gm2,Bbsg,bmeg,btmug,bteg,brmu3e,brtau3mu,brtau3e,flags
+
+       write(111,*)halfppil(1),halfpetal(1),halfpkl(1),
+     $          halfpipnu(1),halfpkpnu(1),halfppil(2),halfpetal(2),
+     $          halfpkl(2),halfpipnu(2),halfpkpnu(2),halfppil(3),
+     $          halfpetal(3),halfpkl(3),halfpipnu(3),halfpkpnu(3),
+     $          msusyold, e1,deltaLL13,deltaRR13,deltaERR13
+!      write(111,78)mSURG(1,1),mSURG(2,2),mSURG(3,3),mSURG(1,2),
+!     $           mSURG(2,3),mSURG(1,3)
+      write(112,*)CRLddunu123,CRLddunu121,CRLddunuG123,
+     $  CRLddunuG121,CRLuddnu123,CRLuddnu121,CRLuddnuG123,CRLuddnuG121,
+     $  CRLuddnuchipm123,CRLuddnuchipm121,CLLuddnu123,CLLuddnu121,
+     $  CLLuddnuG123,CLLuddnuG121,CLLuddnuchipm123,CLLuddnuchipm121,
+     $ CRLddunuchi0123,CRLddunuchi0121,CRLuddnuchi0123,CRLuddnuchi0121,
+     $  CLLuddnuchi0123,CLLuddnuchi0121,CRLuddnu213,CRLuddnu211,
+     $  CRLuddnuG213,CRLuddnuG211,CRLuddnuchipm213,CRLuddnuchipm211,
+     $  CLLuddnu213,CLLuddnu211,CLLuddnuG213,CLLuddnuG211,
+     $  CLLuddnuchipm213,CLLuddnuchipm211,CRLuddnuchi0211,
+     $  CRLuddnuchi0213,CLLuddnuchi0213,CLLuddnuchi0211,tautotal,etotal
+
+      write(113,*)ALppil1,ARppil1,CRLudul11,CRLudulG11,
+     $  CRLudulchipm11,CRLudulchi011,CLLudul11,CLLudulG11,
+     $  CLLudulchipm11,CLLudulchi011,CRRudul11,CRRudulG11,
+     $  CRRudulchipm11,CRRudulchi011,CLRudul11,CLRudulG11,
+     $  CLRudulchipm11,CLRudulchi011
+
+      write(114,78)halfppil6d(1),halfppil6d(2),halfppil6d(3),
+     $   halfpetal6d(1),halfpetal6d(2),halfpetal6d(3),halfpkl6d(1),
+     $   halfpkl6d(2),halfpkl6d(3),halfpipnu6d(1),halfpipnu6d(2),
+     $   halfpipnu6d(3),halfpkpnu6d(1),halfpkpnu6d(2),halfpkpnu6d(3),
+     $  halfpipnu6dfull,halfpkpnu6dfull,halfppiepure6d,halfppimupure6d,
+     $  halfppipnuepure6d,halfknuepure6d,halfpknumupure6d,
+     $  halfpknupure6d,halfpk0epure6d,halfpk0mupure6d,halfpipnufull,
+     $  halfpkpnufull,AURG(3,3),ADRG(3,3),AERG(3,3)
+!      write(113,78)mSQRG(1,1),mSQRG(2,2),mSQRG(3,3),mSQRG(1,2),
+!     $           mSQRG(2,3),mSQRG(1,3)
+!      write(114,78)mSLRG(1,1),mSLRG(2,2),mSLRG(3,3),mSLRG(1,2),
+!     $           mSLRG(2,3),mSLRG(1,3)
+!      write(115,78)mSERG(1,1),mSERG(2,2),mSERG(3,3),mSERG(1,2),
+!     $           mSERG(2,3),mSERG(1,3)
+!      write(116,78)AURG(1,1),AURG(2,2),AURG(3,3),AURG(1,2),
+!     $           AURG(2,3),AURG(1,3)
+!      write(117,78)ADRG(1,1),ADRG(2,2),ADRG(3,3),ADRG(1,2),
+!     $           ADRG(2,3),ADRG(1,3)
+!      write(118,78)AERG(1,1),AERG(2,2),AERG(3,3),AERG(1,2),
+!     $           AERG(2,3),AERG(1,3)
+      write(119,78)M1tz,M2tz,M3tz,sgnmu*mur,(vev2/vev1),dsqrt(mA0sq)
+!      write(120,79)a7,mqtilsq,M3t,deltaLL12,deltaRR12,deltaLR12,
+!     $            deltaRL12,deltaELL12,deltaERR12,deltaELR12,
+!     $            deltaERL12
+
+      write(121,78)ONM(1,1),ONM(1,2),ONM(1,3),ONM(1,4),thetat,M3t
+
+      write(122,79)dsqrt(mh0sq),dsqrt(mHu0sq),dsqrt(mA0sq),
+     $             dsqrt(mhpmsq),dsqrt(SNegg(1)), 
+     $             dsqrt(SNegg(2)),dsqrt(SNegg(3))
+
+      write(123,78)Neg(1),Neg(2),Neg(3),Neg(4),Ceg(1),Ceg(2)
+
+      write(124,78)dsqrt(SUegg(1)) ,dsqrt(SUegg(2)) ,dsqrt(SUegg(3)),
+     $          dsqrt(SUegg(4)) ,dsqrt(SUegg(5)) ,dsqrt(SUegg(6))
+
+      write(125,78)dsqrt(SDegg(1)) ,dsqrt(SDegg(2)) ,dsqrt(SDegg(3)),
+     $          dsqrt(SDegg(4)) ,dsqrt(SDegg(5)) ,dsqrt(SDegg(6))
+
+      write(126,78)dsqrt(SLegg(1)) ,dsqrt(SLegg(2)) ,dsqrt(SLegg(3)),
+     $          dsqrt(SLegg(4)) ,dsqrt(SLegg(5)) ,dsqrt(SLegg(6))
+
+         if(prnstat.eq.1)then
+            WRITE(*,*) "-------------------------------------------- " 
+            WRITE(*,*) "Copy of the output in `suseflav.out' " 
+            WRITE(*,*) "-------------------------------------------- " 
+         else if(prnstat.eq.0)then
+            continue
+         endif
+
+      WRITE(*,'(1x,2A,/,2A,/,2A)') "Observables written in",
+     $     " tmp/output.txt in format: tanbeta m0 m12 a0",
+     $     " sgnmu mh10 mh20 lightHiggs g-2 Brbsgamma Brmuegamma",
+     $     " Brtaumugamma", " Brtauegamma Brmu3e Brtau3mu Brtau3e",
+     $     " flags"
+
+      WRITE(*,*) "--------------------------------------------------" 
+         
+C         write(iunit,97) tanbeta,gmsbsusyb,gmsbmess,nhat,flags
+         write(iunit,87) "flag for the point is",flags
+         if(prnstat.eq.1)then
+C            write(10,97) tanbeta,gmsbsusyb,gmsbmess,nhat,flags 
+         write(10,87) "flag for the point is",flags
+         endif
 
       else if(model.eq.'GMSB')then
 

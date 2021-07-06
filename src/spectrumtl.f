@@ -132,8 +132,9 @@ C****C
       character*4 model
       CHARACTER*100 flags
       double precision mufrge, MWsq_susy, MZsq_susy
+      double precision minisplit,msusyint
 !---------------------------------
-
+      common/mini_split/msusyint
       common/mu_rge/mufrge
       common/loops/ lopt,rhn
       common/sminputs/ mbpole, mtaupole, Mtpole,MZpole
@@ -243,7 +244,9 @@ c$$$      print*,"SLegg(1), SLegg(2) = ", SLegg(1), SLegg(2)
       
       
       msusynew = dsqrt(dsqrt(dabs(SUegg(1))*dabs(SUegg(2))))         
-
+      minisplit = (SUegg(3)+SUegg(4)+SUegg(5)+SUegg(6)+SDegg(3)+
+     $            SDegg(4)+SDegg(5)+SDegg(6))/8.d0
+      msusyint=Sqrt(minisplit)
 
 
       RETURN

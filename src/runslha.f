@@ -248,7 +248,7 @@ C algorithm parameters
       endif wrinq2
 
       wrmod:if(model.ne.'mSUG'.and.model.ne.'NUHM'
-     $     .and.model.ne.'GMSB')then !.and.model.ne.'NUGM'
+     $     .and.model.ne.'GMSB'.and.model.ne.'CNUM')then !.and.model.ne.'NUGM'
 !     $     .and.model.ne.'CNUM')then
          
          write(*,*)'=========================='
