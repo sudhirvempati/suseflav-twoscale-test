@@ -1074,8 +1074,8 @@ C     higgs FLAG
       alpha2MS= alph2drbar/(1.d0+alph2drbar/(6.d0*pi))
       alpha3MS= alph3drbar/(1.d0+alph3drbar/(4.d0*pi))       
       
-      g1MS=Sqrt(4.d0*pi*alpha2MS)
-      g2MS=Sqrt(4.d0*pi*alpha3MS)
+      g1MS=Sqrt(4.d0*pi*alph1drbar)
+      g2MS=Sqrt(4.d0*pi*alpha2MS)
       alphemMS= ((g1MS*g2MS)**2.d0)/(4.d0*pi*(g1MS**2.d0+g2MS**2.d0))
       sinthwMS=g1MS/sqrt(g1MS**2.d0+g2MS**2.d0)
       delrMS=1.d0-pi*alphemMS/(sqrt(2.d0)*GF*MZ*MZ*sinthwMS**2.d0*
