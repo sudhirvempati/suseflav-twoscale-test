@@ -125,7 +125,7 @@ C****C
 
       IMPLICIT NONE
 
-      integer num, try,rhn, try1,i
+      integer num, try,rhn, try1,i,j,k
       integer prnstat,lopt,AOK,check
       integer  runum, itcount,muflag
 
@@ -241,8 +241,8 @@ C--------------------------------------------------------------------------
 !---------------------------------------------------------------------
 !--define by priyanka    
 
-      integer nok,nbad,check
-      double precision MX, tq0, tZ,i0,yy_sm(31),n0,x1,x2,eps,hmin,h1
+      integer nok,nbad,check,i0
+      double precision MX, tq0, tZ,yy_sm(31),n0,x1,x2,eps,hmin,h1
       double precision yuMSbar(3,3),ydMSbar(3,3),yeMSbar(3,3),vevMSbar
       double precision yudiag(3),yddiag(3),UQuMS(3,3),UTUMS(3,3)
       double precision UQdMS(3,3),UTDMS(3,3),UQdMST(3,3),VCKMMSbar(3,3)
@@ -251,8 +251,12 @@ C--------------------------------------------------------------------------
       double precision delrMS,sincorrec,sinthwsqdr,vevdr,deldowndr
       double precision delupdr,delelecdr,Mtdr,Mcdr,Mudr,Mbdr,Msdr,Mddr
       double precision Mtaudr,Mmudr,Medr,vevscdr,beta,alpha1dr
+      double precision alpha1MZ,alpha2MZ,alpha3MZ
 
 !---------------------------------------------
+      common/yukawa_MZ/yuMZ,ydMZ,yeMZ
+      common/alpha_MZ/alpha1MZ,alpha2MZ,alpha3MZ
+!---------------------------------------------------      
 
       common/VCKMparam/ VCKM
       common/mascorr/ MT_qcd_corr
@@ -276,8 +280,8 @@ C--------------------------------------------------------------------------
       common/rgeoutput_susy/ mh1mz,mh2mz,M1tz,M2tz,M3tz,
      $     alph1,alph2,alph3,vev1,vev2,yuRG,ydRG,yeRG
 
-      common/rgeoutput_MZ/ mh1mzz,mh2mzz,M1tmz,M2tmz,M3tmz,
-     $     alph1MZ,alph2MZ,alph3MZ,vev1mz,vev2mz,yumz,ydmz,yemz
+!      common/rgeoutput_MZ/ mh1mzz,mh2mzz,M1tmz,M2tmz,M3tmz,
+!     $     alph1MZ,alph2MZ,alph3MZ,vev1mz,vev2mz,yumz,ydmz,yemz
 
       common/sparticles_susy/SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
      $     mh0sq,mhu0sq,mhpmsq,mA0sq
@@ -956,7 +960,9 @@ C     higgs FLAG
 
 !-----------------------------------------
       msusy = msusyold 
-
+      murgemz= mu_conv
+      bmurgemz = bmurgemz
+      
 !      call runtomz(MX,msusy,mu_conv,bmur_conv,
 !     $     murgemz,bmurgemz,newtbetamz,flags)
 
@@ -1074,8 +1080,8 @@ C     higgs FLAG
       alpha2MS= alph2drbar/(1.d0+alph2drbar/(6.d0*pi))
       alpha3MS= alph3drbar/(1.d0+alph3drbar/(4.d0*pi))       
       
-      g1MS=Sqrt(4.d0*pi*alph1drbar)
-      g2MS=Sqrt(4.d0*pi*alpha2MS)
+      g1MS=Sqrt(4.d0*pi*alpha2MS)
+      g2MS=Sqrt(4.d0*pi*alpha3MS)
       alphemMS= ((g1MS*g2MS)**2.d0)/(4.d0*pi*(g1MS**2.d0+g2MS**2.d0))
       sinthwMS=g1MS/sqrt(g1MS**2.d0+g2MS**2.d0)
       delrMS=1.d0-pi*alphemMS/(sqrt(2.d0)*GF*MZ*MZ*sinthwMS**2.d0*
@@ -1212,6 +1218,55 @@ C-----------------------------
       mt_mz = yy_sm(9)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
       mb_mz = yy_sm(18)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
       mtau_mz = yy_sm(27)*(4.d0*pi)*yy_sm(31)/dsqrt(2.d0)
+      alpha1MZ = (4.d0 * pi)*yy_sm(30)
+      alpha2MZ =  (4.d0 * pi)*yy_sm(29)
+      alpha3MZ =  (4.d0 * pi)*yy_sm(28)
+      
+      i0 = 0
+
+      do i = 1,3
+
+      yuMZ(1,i) = (4.d0*pi)*yy_sm(i0 + i)
+      j = 3 + i
+      yuMZ(2,i) = (4.d0*pi)*yy_sm(i0 + j)
+      k = 6 + i
+      yuMZ(3,i) = (4.d0*pi)*yy_sm(i0 + k)
+
+      enddo 
+
+
+C     Bottom Yukawa !!
+C     ----------------------------------
+
+      i0 = 9
+
+      do i = 1,3
+
+      ydMZ(1,i) = (4.d0*pi)*yy_sm(i0 + i)
+      j = 3 + i
+      ydMZ(2,i) = (4.d0*pi)*yy_sm(i0 + j)
+      k = 6 + i
+      ydMZ(3,i) = (4.d0*pi)*yy_sm(i0 + k)
+
+      enddo 
+
+
+
+C     Tau Yukawa !!!
+C     ----------------------------------
+
+      i0 = 18
+
+      do i = 1,3
+
+      yeMZ(1,i) = (4.d0*pi)*yy_sm(i0 + i)
+      j = 3 + i
+      yeMZ(2,i) = (4.d0*pi)*yy_sm(i0 + j)
+      k = 6 + i
+      yeMZ(3,i) = (4.d0*pi)*yy_sm(i0 + k)
+
+      enddo  
+
 !---------------------------------------------------------------
 !-------------------------------------------------
 C     reinitializing one loop correction to SM inputs to zero

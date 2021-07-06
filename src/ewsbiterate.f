@@ -1627,21 +1627,40 @@ C****C
      $      mbmzdrbar,mbmzmsbar
 
       DOUBLE PRECISION yumz(3,3), ydmz(3,3), yemz(3,3)
-      DOUBLE PRECISION alph3MZ, alph2MZ, alph1MZ
-      DOUBLE PRECISION AURGz(3,3),ADRGz(3,3),AERGz(3,3)
-      DOUBLE PRECISION mSQRGz(3,3), mSURGz(3,3),mSDRGz(3,3)
-      DOUBLE PRECISION mSLRGz(3,3),mSNURGz(3,3), mSERGz(3,3)
-      DOUBLE PRECISION M1tmz,M2tmz,M3tmz, mh1mzz,mh2mzz
-      DOUBLE PRECISION murgemz, vev1mz,vev2mz, ANURGz(3,3)
-      DOUBLE PRECISION ONz(4,4),OCLz(2,2),OCRz(2,2),
-     $     MCharz(2,2), MNeutz(4,4)
-      double precision mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,Cegz(2),Negz(4)
-      double precision SUeggz(6),SDeggz(6),SLeggz(6),SNeggz(3)
+!      DOUBLE PRECISION alph3MZ, alph2MZ, alph1MZ
+!      DOUBLE PRECISION AURGz(3,3),ADRGz(3,3),AERGz(3,3)
+!      DOUBLE PRECISION mSQRGz(3,3), mSURGz(3,3),mSDRGz(3,3)
+!      DOUBLE PRECISION mSLRGz(3,3),mSNURGz(3,3), mSERGz(3,3)
+!      DOUBLE PRECISION M1tmz,M2tmz,M3tmz, mh1mzz,mh2mzz
+!      DOUBLE PRECISION murgemz, vev1mz,vev2mz, ANURGz(3,3)
+!      DOUBLE PRECISION ONz(4,4),OCLz(2,2),OCRz(2,2),
+!     $     MCharz(2,2), MNeutz(4,4)
+!      double precision mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,Cegz(2),Negz(4)
+!      double precision SUeggz(6),SDeggz(6),SLeggz(6),SNeggz(3)
+      
+
+      DOUBLE PRECISION yuRG(3,3), ydRG(3,3), yeRG(3,3)
+      DOUBLE PRECISION alph3, alph2, alph1
+      DOUBLE PRECISION AURG(3,3),ADRG(3,3),AERG(3,3)
+      DOUBLE PRECISION mSQRG(3,3), mSURG(3,3),mSDRG(3,3)
+      DOUBLE PRECISION mSLRG(3,3),mSNURG(3,3), mSERG(3,3)
+      DOUBLE PRECISION M1tz,M2tz,M3tz, mh1mz,mh2mz
+      DOUBLE PRECISION murgemz, vev1,vev2, ANURG(3,3)
+      DOUBLE PRECISION ON(4,4),OCL(2,2),OCR(2,2),
+     $     MChar(2,2), MNeut(4,4)
+      double precision mh0sq,mhu0sq,mhpmsq,mA0sq,Ceg(2),Neg(4)
+      double precision SUegg(6),SDegg(6),SLegg(6),SNegg(3)
+            
       DOUBLE PRECISION delta1z,delta2z,MWsqpole_MZ
 
       double precision MWpole, MZpole,pi,MW,MZ,mtaupoledrbar,
      $     mTauMZmsbar,mTauMZdrbar
+      double precision alpha1MZ,alpha2MZ,alpha3MZ
 
+!---------------------------------------------
+      common/yukawa_MZ/yuMZ,ydMZ,yeMZ
+      common/alpha_MZ/alpha1MZ,alpha2MZ,alpha3MZ
+!---------------------------------------------------  
 !----------------
       common/rgeopt_mz/mt_mz, mb_mz, mtau_mz
 
@@ -1653,17 +1672,25 @@ C****C
       common/mu_mz/ murgemz
       common/qcd_cor/mbmzdrbar,mbmzmsbar
 
-      common/softout_mat_mz/mSQRGz,mSURGz,mSDRGz,AURGz,ADRGz,
-     $     AERGz,ANURGz,mSLRGz,mSERGz, mSNURGz,ONz,OCLz,OCRz,
-     $     MCharz, MNeutz
+!      common/softout_mat_mz/mSQRGz,mSURGz,mSDRGz,AURGz,ADRGz,
+!     $     AERGz,ANURGz,mSLRGz,mSERGz, mSNURGz,ONz,OCLz,OCRz,
+!     $     MCharz, MNeutz
 
-      common/rgeoutput_MZ/ mh1mzz,mh2mzz,M1tmz,M2tmz,M3tmz,
-     $     alph1MZ,alph2MZ,alph3MZ,vev1mz,vev2mz,yumz,ydmz,yemz
+!      common/rgeoutput_MZ/ mh1mzz,mh2mzz,M1tmz,M2tmz,M3tmz,
+!     $     alph1MZ,alph2MZ,alph3MZ,vev1mz,vev2mz,yumz,ydmz,yemz
 
-      common/sparticles_MZ/SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz
+!      common/sparticles_MZ/SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,
+!     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz
 
+      common/softout_mat/mSQRG,mSURG,mSDRG,AURG,ADRG,
+     $     AERG,ANURG,mSLRG,mSERG, mSNURG,ON,OCL,OCR,MChar, MNeut
+     
+      common/rgeoutput_susy/ mh1mz,mh2mz,M1tz,M2tz,M3tz,
+     $     alph1,alph2,alph3,vev1,vev2,yuRG,ydRG,yeRG
 
+      common/sparticles_susy/SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq
+          
       common/finetuning/delta1z,delta2z
       common/deltarho/ piwwT0SM,pizzT0SM,pizzt,piwwt,MWsqpole_MZ
 !--------------------
@@ -1682,9 +1709,9 @@ C****C
 
       pi = 4.d0*datan(1.d0)
 
-      g  = dsqrt(alph2MZ*16.d0*pi*pi)
-      gp = dsqrt(alph1MZ*16.d0*pi*pi) * dsqrt(3.d0/5.d0) 
-      g3 = dsqrt(alph3MZ*16.d0*pi*pi)
+      g  = dsqrt(alpha2MZ*16.d0*pi*pi)
+      gp = dsqrt(alpha1MZ*16.d0*pi*pi) * dsqrt(3.d0/5.d0) 
+      g3 = dsqrt(alpha3MZ*16.d0*pi*pi)
 
       modmu = murgemz
 
@@ -1698,15 +1725,15 @@ C****C
 !------------------------
       q = MZ
 
-      call strongcouplingSM(q,g3,mt_mz,M3tmz,SUeggz,SDeggz,
+      call strongcouplingSM(q,g3,mt_mz,M3tz,SUegg,SDegg,
      $     alphas1,delalphas)
 
 
       q = MZ
 
 
-      call emcouplingSM(q,alphaDR,mt_mz,SUeggz,SDeggz,SLeggz,Cegz,
-     $     mHpmsqz,alphaem,delalphem)
+      call emcouplingSM(q,alphaDR,mt_mz,SUegg,SDegg,SLegg,Ceg,
+     $     mHpmsq,alphaem,delalphem)
 
 
 !------------------------------------------------------------------------
@@ -1714,9 +1741,9 @@ C****C
 
       q = MZ
 
-      call pizzSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUeggz,SDeggz,
-     $     SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,OCRz,
+      call pizzSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUegg,SDegg,
+     $     SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,
      $     sinsqthw_mz,pizzTSM)
 
 !      print*,"pizzT = ", pizzT
@@ -1739,9 +1766,9 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
 
       p = MW
 
-      call piwwSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUeggz,SDeggz,
-     $     SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,OCRz,
+      call piwwSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUegg,SDegg,
+     $     SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,
      $     sinsqthw_mz,piwwTSM)
 
       MWc_mz = dsqrt(MW*MW + piwwTSM)
@@ -1754,9 +1781,9 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
 
       p = 2.d-5
 
-      call piwwSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUeggz,SDeggz,
-     $     SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,OCRz,
+      call piwwSM(p,q,g,mtpole,mb_mz,mtau_mz,tanbeta,SUegg,SDegg,
+     $     SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,
      $     sinsqthw_mz,piwwT0SM)
 
 !------------
@@ -1766,8 +1793,8 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
 
       q = MZ
 
-      call pizgammaSM(p,q,g,mt_mz,mb_mz,mtau_mz,SUeggz,SDeggz,
-     $     SLeggz,Cegz,mhpmsqz,OCLz,OCRz,alphaDR/(1-delalphem),
+      call pizgammaSM(p,q,g,mt_mz,mb_mz,mtau_mz,SUegg,SDegg,
+     $     SLegg,Ceg,mhpmsq,OCL,OCR,alphaDR/(1-delalphem),
      $     pizg0SM)
 
 
@@ -1777,8 +1804,8 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
 
       q = MZ
 
-      call pizgammaSM(p,q,g,mt_mz,mb_mz,mtau_mz,SUeggz,SDeggz,
-     $     SLeggz,Cegz,mhpmsqz,OCLz,OCRz,alphaDR/(1-delalphem),
+      call pizgammaSM(p,q,g,mt_mz,mb_mz,mtau_mz,SUegg,SDegg,
+     $     SLegg,Ceg,mhpmsq,OCL,OCR,alphaDR/(1-delalphem),
      $     pizgMZSM)
 
 !-----------------
@@ -1787,9 +1814,9 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
 
       q = MZ
 
-      call pizzSM(p,q,g,mt_mz,mb_mz,mtau_mz,tanbeta,SUeggz,SDeggz,
-     $     SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,OCRz,
+      call pizzSM(p,q,g,mt_mz,mb_mz,mtau_mz,tanbeta,SUegg,SDegg,
+     $     SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,
      $     sinsqthw_mz,pizzT0SM)
 
       
@@ -1800,9 +1827,9 @@ c$$$      mtau_mz = yeMZ(3,3) * vev1n/dsqrt(2.d0)
       flags2tw = 'AOK'
       q = MZ
       
-      call S2ThetaWSM(q,g,gp,Negz,Cegz,SLeggz,SNeggz,ONz,OCLz,
-     $     OCRz,sinthwold, rhold,delalphem,alphatree,pizzTSM,
-     $     piwwTSM,piwwT0SM,mh0sqz,trysinsq,flags2tw)
+      call S2ThetaWSM(q,g,gp,Neg,Ceg,SLegg,SNegg,ON,OCL,
+     $     OCR,sinthwold, rhold,delalphem,alphatree,pizzTSM,
+     $     piwwTSM,piwwT0SM,mh0sq,trysinsq,flags2tw)
 
 c$$$      print*,"flags, flags2tw = ", flags, flags2tw
 
@@ -1828,16 +1855,16 @@ c$$$      print*,"flags, flags2tw = ", flags, flags2tw
       q = MZ
 
       call tadpole1(q,g,mb_mz,mtau_mz,tanbeta,
-     $     ADRGz,AERGz,yuMZ,ydMZ,yeMZ,SUeggz,SDeggz,SLeggz,
-     $     SNeggz,Negz,Cegz,ONz,OCLz,OCRz,sgnmu,modmu,mh0sqz,mhu0sqz,
-     $     mHpmsqz,mA0sqz,vev1MZ,delta2z)
+     $     ADRG,AERG,yuRG,ydRG,yeRG,SUegg,SDegg,SLegg,
+     $     SNegg,Neg,Ceg,ON,OCL,OCR,sgnmu,modmu,mh0sq,mhu0sq,
+     $     mHpmsq,mA0sq,vev1,delta2z)
 
       
       q = MZ
       
-      call tadpole2(q,g,mt_mz,tanbeta,AURGz,yuMZ,ydMZ,yeMZ,
-     $     SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,ONz,OCLz,OCRz,
-     $     sgnmu,modmu,mh0sqz,mhu0sqz,mHpmsqz,mA0sqz,vev2MZ,
+      call tadpole2(q,g,mt_mz,tanbeta,AURG,yuRG,ydRG,yeRG,
+     $     SUegg,SDegg,SLegg,SNegg,Neg,Ceg,ON,OCL,OCR,
+     $     sgnmu,modmu,mh0sq,mhu0sq,mHpmsq,mA0sq,vev2,
      $     delta1z)
       
 !----------------------------------------------------------------------------
@@ -1851,10 +1878,10 @@ c$$$      print*,"flags, flags2tw = ", flags, flags2tw
 !     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,
 !     $     OCRz,sinsqthw_mz,correction)
 
-      call topcorSM(p,q,g,gp,g3,M3tmz,mt_mz,mb_mz,tanbeta,
-     $     yuMZ,ydMZ,SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,
-     $     OCRz,sinsqthw_mz,correction)
+      call topcorSM(p,q,g,gp,g3,M3tz,mt_mz,mb_mz,tanbeta,
+     $     yuMZ,ydMZ,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,
+     $     OCR,sinsqthw_mz,correction)
 !----------------------------------------------------------------------------
 
 
@@ -1874,10 +1901,10 @@ c$$$      print*,"flags, flags2tw = ", flags, flags2tw
 
       q = MZ
 
-      call taucorSM(p,q,g,gp,M3tmz,mtau_mz,tanbeta,yeMZ,
-     $     SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,mh0sqz,
-     $     mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,
-     $     OCRz,sinsqthw_mz,mtaucor)
+      call taucorSM(p,q,g,gp,M3tz,mtau_mz,tanbeta,yeMZ,
+     $     SUegg,SDegg,SLegg,SNegg,Neg,Ceg,mh0sq,
+     $     mhu0sq,mhpmsq,mA0sq,ON,OCL,
+     $     OCR,sinsqthw_mz,mtaucor)
 
 !----------------------------------------------------------------------------
    
