@@ -111,7 +111,7 @@ c===============================================================================
       integer i, j,k, i0,j0,c,lopt,rc,itcount,rhn,fuscale
       real*8 a1_unif, a2_unif
       double precision t,r,e
-      double precision m1t,m2t,m3t,b1,b2,b3
+      double precision m1t,m2t,m3t,b1(3),b2(3,3),c2(3,3)
       double precision yuyudag(3,3),ydyddag(3,3),yeyedag(3,3),ad(3,3)
       double precision tryuyudag, trydyddag,tryeyedag,yu(3,3),yd(3,3)
       double precision ye(3,3),mx,gut,gdt,get
@@ -375,16 +375,16 @@ c===============================================================================
       common/counter/itcount
       common/unif/ e1,yukgut
       common/unifs/fuscale
-
+      common/bcoeff/b1,b2,c2
 
 !---------------------------------------------------
       
       
       pi = datan(1.d0) * 4.d0
 
-      b1 = 33.d0/5.d0 
-      b2 = 1.d0
-      b3 = -3.d0
+!      b1 = 33.d0/5.d0 
+!      b2 = 1.d0
+!      b3 = -3.d0
 
       MX  = 5.d0*(10.d0**19.d0)
 
@@ -2968,42 +2968,71 @@ C-------------------------------------------------------------------------------
 C     RGEs FOR GAUGE COUPLINGS
 C-------------------------------------------------------------------------------
       if(lopt.eq.2)then
+!-------------------------------------------------------------------------------
+C     RGEs FOR GAUGE COUPLINGS
+C-------------------------------------------------------------------------------
 
-      dydx(119)= -((alph3**(2.d0))*b3)
+
+      dydx(119)= -((alph3**(2.d0))*b1(3))
      &     - ((alph3**(2.d0)*
-     &     (((11.d0/5.d0)*alph1) + 
-     &     ((9.d0)*alph2)+
-     &     ((14.d0)*alph3)-((4.d0)*tryudagyu)-((4.d0)*tryddagyd))))
+     &     ((b2(3,1)*alph1) + 
+     &     (b2(3,2)*alph2)+
+     &     (b2(3,3)*alph3)-(c2(3,1)*tryudagyu)-(c2(3,2)*tryddagyd))))
 
 
 
-      dydx(120)= -((alph2**(2.d0))*b2)
+      dydx(120)= -((alph2**(2.d0))*b1(2))
      &     - ((alph2**(2.d0)*
-     &     (((9.d0/5.d0)*alph1) + 
-     &     ((25.d0)*alph2) +
-     &     ((24.d0)*alph3)
-     &     -  ((6.d0)*tryudagyu)-((6.d0)*tryddagyd)-((2.d0)*tryedagye)
-     &     - ((2.d0)*trynudagynu))))
+     &     ((b2(2,1)*alph1) + 
+     &     (b2(2,2)*alph2) +
+     &     (b2(2,3)*alph3)
+     &     -  (c2(2,1)*tryudagyu)-(c2(2,2)*tryddagyd)
+     &     -(c2(2,3)*tryedagye))))
 
 
-      dydx(121)= -((alph1**(2.d0))*b1)
+      dydx(121)= -((alph1**(2.d0))*b1(1))
      &     -((alph1**(2.d0)*
-     &     (((199.d0/25.d0)*alph1) + 
-     &     ((27.d0/5.d0)*alph2) + ((88.d0/5.d0)*alph3)
-     &     -((26.d0/5.d0)*tryudagyu)-((14.d0/5.d0)*tryddagyd)
-     &     -((18.d0/5.d0)*tryedagye)-((6.d0/5.d0)*trynudagynu))))
+     &     ((b2(1,1)*alph1) + 
+     &     (b2(1,2)*alph2) + (b2(1,3)*alph3)
+     &     -(c2(1,1)*tryudagyu)-(c2(1,2)*tryddagyd)
+     &     -(c2(1,3)*tryedagye))))
+
+
+!      dydx(119)= -((alph3**(2.d0))*b3)
+!     &     - ((alph3**(2.d0)*
+!     &     (((11.d0/5.d0)*alph1) + 
+!     &     ((9.d0)*alph2)+
+!     &     ((14.d0)*alph3)-((4.d0)*tryudagyu)-((4.d0)*tryddagyd))))
+
+
+
+!      dydx(120)= -((alph2**(2.d0))*b2)
+!     &     - ((alph2**(2.d0)*
+!     &     (((9.d0/5.d0)*alph1) + 
+!     &     ((25.d0)*alph2) +
+!     &     ((24.d0)*alph3)
+!     &     -  ((6.d0)*tryudagyu)-((6.d0)*tryddagyd)-((2.d0)*tryedagye)
+!     &     - ((2.d0)*trynudagynu))))
+
+
+!      dydx(121)= -((alph1**(2.d0))*b1)
+!     &     -((alph1**(2.d0)*
+!     &     (((199.d0/25.d0)*alph1) + 
+!     &     ((27.d0/5.d0)*alph2) + ((88.d0/5.d0)*alph3)
+!     &     -((26.d0/5.d0)*tryudagyu)-((14.d0/5.d0)*tryddagyd)
+!     &     -((18.d0/5.d0)*tryedagye)-((6.d0/5.d0)*trynudagynu))))
 
       else
-
-      dydx(119)= -((alph3**(2.d0))*b3)
+      dydx(119)= -((alph3**(2.d0))*b1(3))
+!      dydx(119)= -((alph3**(2.d0))*b3)
 c$$$     &     - ((alph3**(2.d0)*
 c$$$     &     (((11.d0/5.d0)*alph1) + 
 c$$$     &     ((9.d0)*alph2)+
 c$$$     &     ((14.d0)*alph3)-((4.d0)*tryudagyu)-((4.d0)*tryddagyd))))
 
 
-
-      dydx(120)= -((alph2**(2.d0))*b2)
+      dydx(120)= -((alph2**(2.d0))*b1(2))
+!      dydx(120)= -((alph2**(2.d0))*b2)
 c$$$     &     - ((alph2**(2.d0)*
 c$$$     &     (((9.d0/5.d0)*alph1) + 
 c$$$     &     ((25.d0)*alph2) +
@@ -3011,8 +3040,8 @@ c$$$     &     ((24.d0)*alph3)
 c$$$     &     -  ((6.d0)*tryudagyu)-((6.d0)*tryddagyd)-((2.d0)*tryedagye)
 c$$$     &     - ((2.d0)*trynudagynu))))
 
-
-      dydx(121)= -((alph1**(2.d0))*b1)
+      dydx(121)= -((alph1**(2.d0))*b1(1))
+!      dydx(121)= -((alph1**(2.d0))*b1)
 c$$$     &     -((alph1**(2.d0)*
 c$$$     &     (((199.d0/25.d0)*alph1) + 
 c$$$     &     ((27.d0/5.d0)*alph2) + ((88.d0/5.d0)*alph3)
@@ -3026,7 +3055,8 @@ C     RGE FOR GAUGINOs
       
       if(lopt.eq.2)then
 
-      dydx(122)=   -(b1*alph1*M1t)
+!      dydx(122)=   -(b1*alph1*M1t)
+      dydx(122)=   -(b1(1)*alph1*M1t)
      .     - ((alph1)*(((398.d0/25.d0)*alph1*M1t)    +
      .     ((27.d0/5.d0)*alph2*(M1t+M2t)) +
      .     ((88.d0/5.d0)*alph3*(M1t+M3t)) +
@@ -3036,7 +3066,8 @@ C     RGE FOR GAUGINOs
      .     +  ((6.d0/5.d0)*(trynudaganu-(M1t*trynudagynu)))))
 
 
-      dydx(123)=    -(b2*alph2*M2t)
+!      dydx(123)=    -(b2*alph2*M2t)
+      dydx(123)=    -(b1(2)*alph2*M2t)
      .     - ((alph2)*(((9.d0/5.d0)*alph1*(M2t+M1t)) +
      .     (50.d0*alph2*M2t)             +
      .     (24.d0*alph3*(M2t+M3t))       +
@@ -3046,7 +3077,8 @@ C     RGE FOR GAUGINOs
      .     + (2.d0*(trynudaganu-(M2t*trynudagynu)))))
 
 
-      dydx(124)=   -(b3*alph3*M3t)
+!      dydx(124)=   -(b3*alph3*M3t)
+      dydx(124)=   -(b1(3)*alph3*M3t)
      .     - ((alph3)*(((11.d0/5.d0)*alph1*(M3t+M1t)) +
      .     (9.d0*alph2*(M3t+M2t))         +
      .     (28.d0*alph3*M3t)              +
@@ -3055,7 +3087,8 @@ C     RGE FOR GAUGINOs
 
       else
 
-      dydx(122)=   -(b1*alph1*M1t)
+!      dydx(122)=   -(b1*alph1*M1t)
+      dydx(122)=   -(b1(1)*alph1*M1t)
 c$$$     .     - ((alph1)*(((398.d0/25.d0)*alph1*M1t)    +
 c$$$     .     ((27.d0/5.d0)*alph2*(M1t+M2t)) +
 c$$$     .     ((88.d0/5.d0)*alph3*(M1t+M3t)) +
@@ -3064,8 +3097,8 @@ c$$$     .     ((14.d0/5.d0)*(tryddagad-(M1t*tryddagyd))) +
 c$$$     .     ((18.d0/5.d0)*(tryedagae-(M1t*tryedagye)))
 c$$$     .     +  ((6.d0/5.d0)*(trynudaganu-(M1t*trynudagynu)))))
 
-
-      dydx(123)=    -(b2*alph2*M2t)
+      dydx(123)=    -(b1(2)*alph2*M2t)
+!      dydx(123)=    -(b2*alph2*M2t)
 c$$$     .     - ((alph2)*(((9.d0/5.d0)*alph1*(M2t+M1t)) +
 c$$$     .     (50.d0*alph2*M2t)             +
 c$$$     .     (24.d0*alph3*(M2t+M3t))       +
@@ -3074,8 +3107,8 @@ c$$$     .     (6.d0*(tryddagad-(M2t*tryddagyd))) +
 c$$$     .     (2.d0*(tryedagae-(M2t*tryedagye)))
 c$$$     .     + (2.d0*(trynudaganu-(M2t*trynudagynu)))))
 
-
-      dydx(124)=   -(b3*alph3*M3t)
+      dydx(124)=   -(b1(3)*alph3*M3t)
+!      dydx(124)=   -(b3*alph3*M3t)
 c$$$     .     - ((alph3)*(((11.d0/5.d0)*alph1*(M3t+M1t)) +
 c$$$     .     (9.d0*alph2*(M3t+M2t))         +
 c$$$     .     (28.d0*alph3*M3t)              +
@@ -3129,7 +3162,8 @@ C-----------------------------------------------------------------------------
      $     MAX(a1_unif,a2_unif)))
 
 
-      
+       print*, yy(121)*16.d0*pi
+     $       *pi, yy(120)*16.d0*pi*pi, yy(119)*16.d0*pi*pi,e      
 !------------------------------------------------------
 
       tol  = 0.001d0

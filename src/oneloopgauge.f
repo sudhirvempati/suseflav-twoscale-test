@@ -50,7 +50,7 @@ C****C
 !                  Gauge Coupling Radiative Correction
 !-------------------------------------------------------------------------
 
-      subroutine strongcoupling(q,g3,mt,M3tz,SUegg,SDegg,
+      subroutine strongcouplingSM(q,g3,mt,M3tz,SUegg,SDegg,
      $     alphas1,delalphas)
       
       integer i, j
@@ -98,20 +98,24 @@ c$$$      mdown(3,2) = dsqrt(SDegg(1))
                  
 !------------------------------------------ 
       alphas = alphasin !g3 * g3 / ( 4.d0 * pi)
-            
+
       delalphas = (alphas / (2.d0 * pi)) * (0.5d0 - (2.d0/ 3.d0) *
-     $     dlog(mt/ q) - 2.d0 * dlog(dabs(mGluino) / q))
+     $     dlog(mt/ q))
+            
+!      delalphas = (alphas / (2.d0 * pi)) * (0.5d0 - (2.d0/ 3.d0) *
+!     $     dlog(mt/ q) - 2.d0 * dlog(dabs(mGluino) / q))
+
       
 !      print*,"delalphas = ", delalphas
       
-      loopi: do i = 1, 3
-      loopj: do j = 1, 2
+!      loopi: do i = 1, 3
+!      loopj: do j = 1, 2
       
-      delalphas = delalphas - (alphas / (12.d0 * pi)) * 
-     $     (dlog(mup(i, j)/ q) + dlog(mdown(i, j)/ q))
+!      delalphas = delalphas - (alphas / (12.d0 * pi)) * 
+!     $     (dlog(mup(i, j)/ q) + dlog(mdown(i, j)/ q))
       
-      enddo loopj
-      enddo loopi
+!      enddo loopj
+!      enddo loopi
 
 !      print*,"delalphas = ", delalphas
       
@@ -122,7 +126,7 @@ c$$$      mdown(3,2) = dsqrt(SDegg(1))
 !------------------------------------------
       
       return     
-      end subroutine strongcoupling
+      end subroutine strongcouplingSM
 
 !======================================================================================
 
@@ -132,7 +136,7 @@ c$$$   DRbar scheme at scale Q. From hep-ph/9606211. Input empirical value of
 c$$$   alpha at MZ external momentum....
 !-----------------------------------------------------------------------------------
       
-      subroutine emcoupling(q,alphaDR,mt,SUegg,SDegg,SLegg,Ceg,
+      subroutine emcouplingSM(q,alphaDR,mt,SUegg,SDegg,SLegg,Ceg,
      $     mHpmsq,alphaem,delalphem)
 
       
@@ -227,10 +231,12 @@ c$$$     $     (16.d0/ 9.d0) * dlog(mt/ q))
       
 
       alphaem = alph
-      
-      
+
       delalphem = 0.d0 - 
-     $     ((alphaem/(2.d0 * pi)) * (deltasm + deltasusy))
+     $     ((alphaem/(2.d0 * pi)) * (deltasm))    
+      
+!      delalphem = 0.d0 - 
+!     $     ((alphaem/(2.d0 * pi)) * (deltasm + deltasusy))
       
 c$$$      print*,"deltasm = ", deltasm, " deltasusy = ", deltasusy
 c$$$      print*,"delalphem = ", delalphem
@@ -240,7 +246,7 @@ c$$$      print*,"alphaem = ", alphaem
       
 !------------------------------------------------
       return
-      end subroutine emcoupling
+      end subroutine emcouplingSM
 
 !-----------------------------------------------------------------------------
 

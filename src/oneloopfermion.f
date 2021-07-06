@@ -64,7 +64,7 @@ C
 C      Corrections to fermions
 C     
 C---------------------------------------------------------------------------      
-      SUBROUTINE topcor(p,q,g,gp,g3,M3t,mt,mb,tanbeta,
+      SUBROUTINE topcorSM(p,q,g,gp,g3,M3t,mt,mb,tanbeta,
      $     yuRG,ydRG,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
      $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,
      $     OCR,sinsqtheff,correction)
@@ -582,8 +582,10 @@ C     couplings
 
 !----------------------------------------------------------------
 
-      correction = (stopterm + btmtermt + toptermt + tneutterm + 
-     $     charginoterm )*
+!      correction = (stopterm + btmtermt + toptermt + tneutterm + 
+!     $     charginoterm )*
+!     $     mtpole/(16.d0*pi*pi)
+      correction = (btmtermt + toptermt)*
      $     mtpole/(16.d0*pi*pi)
 
 c$$$      print*,"stopterm, btmtermt+toptermt, tneutterm, charginoterm, 
@@ -592,11 +594,11 @@ c$$$     $     charginoterm, mt, mtpole, g3*g3/(4.d0*pi)
 
       RETURN
 
-      END SUBROUTINE topcor
+      END SUBROUTINE topcorSM
 C===========================================================================
 
 
-      SUBROUTINE bottomcor(p,q,g,gp,g3,M3t,mt,mb,tanbeta,
+      SUBROUTINE bottomcorSM(p,q,g,gp,g3,M3t,mt,mb,tanbeta,
      $     yuRG,ydRG,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
      $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,
      $     OCR,sinsqtheff,mbcor,mbdrbar)
@@ -1156,8 +1158,10 @@ C          Neutralinos
 
 !------------------------------------------------------------------------------
 
-      correction = (- stopterm - (toptermt + btmtermt +
-     $     tneutterm + charginoterm) /(16.d0*pi*pi))
+!      correction = (- stopterm - (toptermt + btmtermt +
+!     $     tneutterm + charginoterm) /(16.d0*pi*pi))
+
+      correction = (- (toptermt + btmtermt) /(16.d0*pi*pi))
 
 c$$$      print*,"in btmcr stopterm, topterm, btmterm, neutterm, 
 c$$$     $     charterm, mb = ", stopterm, toptermt, btmtermt, tneutterm, 
@@ -1172,11 +1176,11 @@ c$$$     $     mbmzdrbar/(1 + correction)
 
       RETURN
 
-      END SUBROUTINE bottomcor
+      END SUBROUTINE bottomcorSM
 
 C====================================================================================
 
-      SUBROUTINE taucor(p,q,g,gp,M3t,mtau,tanbeta,yeRG,
+      SUBROUTINE taucorSM(p,q,g,gp,M3t,mtau,tanbeta,yeRG,
      $     SUegg,SDegg,SLegg,SNegg,Neg,Ceg,mh0sq,
      $     mhu0sq,mhpmsq,mA0sq,ON,OCL,
      $     OCR,sinsqtheff,mtaucor)
@@ -1628,8 +1632,10 @@ C        Mass eignebasis of charginos
 
 !----------------------------------------------------------
 
-      correction = (charginoterm + btmtermt + toptermt + tneutterm)
-     $     /((16.d0*pi*pi))  
+!      correction = (charginoterm + btmtermt + toptermt + tneutterm)
+!     $     /((16.d0*pi*pi))  
+     
+      correction = (btmtermt + toptermt)/((16.d0*pi*pi)) 
 
 c$$$      print*,"neut, char, higgs = ", tneutterm ,
 c$$$     $     charginoterm ,(btmtermt+toptermt)
@@ -1640,6 +1646,6 @@ c$$$      print*,"mtaupole, mtau_mz = ", mtaupole,mtau,mtaup
       
       RETURN
 
-      END SUBROUTINE taucor
+      END SUBROUTINE taucorSM
 
 !============================================================================================================

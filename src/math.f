@@ -41,7 +41,7 @@ C					REST OF THE PARAMETERS ARE PURELY INTERNAL PURPOSES
       integer, intent(out) :: check
 !      integer, save :: check = 0
       double precision  delta,dt1,dtmin,t1,t2,dyinitial(neq),MINI
-      PARAMETER (MXnstpsS=50000,NSTMAX=500,KSMXX=500,MINI=2.d-31)
+      PARAMETER (MXnstpsS=50000,NSTMAX=530,KSMXX=530,MINI=2.d-31)
       INTEGER i,ksmx,qount,nstps
       double precision  dtsav,dt,dtdid,dtnext,t,tsav,dydt(NSTMAX),
      . tp(KSMXX), y(NSTMAX),yp(NSTMAX,KSMXX),yscle(NSTMAX)
@@ -126,7 +126,7 @@ C     ==========================================================================
         INTEGER n,NSTMAX
         double precision dt,t,dydt(n),y(n),dyerr(n),dyout(n)
         EXTERNAL diffeqs
-        PARAMETER (NSTMAX=500)
+        PARAMETER (NSTMAX=530)
 
         
 CU    USES diffeqs
@@ -198,7 +198,7 @@ CU    USES diffeqs
        DOUBLE PRECISION delta,dtdid,dtnext,dttry,t,dydt(n),y(n),
      .  yscle(n)
        EXTERNAL diffeqs
-       PARAMETER (NSTMAX=500)
+       PARAMETER (NSTMAX=530)
 CU     USES diffeqs,CSHKRPRK4
        INTEGER i
        DOUBLE PRECISION maxeror,dt,xnew,dyerr(NSTMAX),dytemp(NSTMAX),

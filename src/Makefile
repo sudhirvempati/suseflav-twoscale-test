@@ -11,10 +11,10 @@
 
 
 ifeq ($(FC),ifort)
-  FFLAGS = -g -funroll-loops -check pointer -O3 -march=armv8-a
+  FFLAGS = -g -funroll-loops -check pointer -O3
   AR = xiar
 else
-  FFLAGS = -pg -funroll-loops -fstrength-reduce -O3 -march=armv8-a
+  FFLAGS = -pg -funroll-loops -fstrength-reduce -O3 
   AR = ar
 endif
 
@@ -23,8 +23,8 @@ math.o  mssmrge.o  smrge.o ewsbiterate.o oneloopPV.o \
 oneloopselfenergy.o  onelooptadpole.o  oneloophiggs.o \
 oneloopsfermion.o oneloopfermion.o  oneloopgauge.o \
 oneloopneutralino.o  oneloopchargino.o  spectrumtl.o \
-rgeiterate.o  slha.o  sinsqthw.o  bsg.o CEigensystem.o \
-HEigensystem.o SVD.o twoloophiggs.o
+rgeiterate.o  slha.o slha2.o  sinsqthw.o  bsg.o CEigensystem.o \
+HEigensystem.o SVD.o twoloophiggs.o ProtondecaySU5goto.o
 
 
 .SUFFIXES : .o .f .F .a
