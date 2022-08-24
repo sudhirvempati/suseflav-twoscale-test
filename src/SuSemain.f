@@ -246,7 +246,7 @@ C-------------------------------------
 
       complex*8 VCKMW(3,3),Imag
       double precision lckm,Ackm,rhockm,etackm,rhobckm,etabckm
-      double precision deltaLL13,deltaRR13,deltaERR13
+      double precision deltaLL13,deltaRR13,deltaERR13,gpmzsq,g2sq
 
       DOUBLE PRECISION CRLddunu123,CRLddunu121,CRLddunuG123,
      $  CRLddunuG121,CRLuddnu123,CRLuddnu121,CRLuddnuG123,CRLuddnuG121,
@@ -620,7 +620,7 @@ c$$$  write(*,*) ''
 !      print*,"mzpole = ", mzpole
 
       pi = 4.d0*datan(1.d0)
-      sinsqtw = 0.231d0
+      sinsqtw = 0.2221d0
       stw = dsqrt(sinsqtw)
       ctw = dsqrt(1.d0 - sinsqtw)
       MWpole = MZpole * ctw
@@ -632,7 +632,7 @@ c$$$  write(*,*) ''
 
       alphsMZdrbar = (pi/((pi/alphas) - 0.25d0))
 
-      alpha =  1.d0/((1.d0/alph) - (1.d0/(6.d0*pi)))
+!      alpha =  1.d0/((1.d0/alph) - (1.d0/(6.d0*pi)))
       
 !      print*,"alpha conv = ", alpha
 
@@ -649,26 +649,34 @@ c$$$      print*,"alpha2 = ", alphaemMZdrbar
 !     Top,tau masses  -  Pole mass to DRbar 
 !----------------------------------------------------------------
 
-!      DeltaTZ = 2.d0 * dLog(Mtpole/MZ)
+      DeltaTZ = 2.d0 * dLog(Mtpole/MZ)
 
-!      alphasmt = alphsMZdrbar /(1.d0+3.d0*alphsMZdrbar*
-!     $     DeltaTZ/(4.d0* Pi))
+      alphasmt = alphsMZdrbar /(1.d0+3.d0*alphsMZdrbar*
+     $     DeltaTZ/(4.d0* Pi))
 
-!      MT = Mtpole * (1.d0 -                                            !<---check expression.
-!     $     (alphasmt * (5.d0 - 3.d0 * DeltaTZ)/(3.d0*Pi)) -
-!     $     (alphasmt**2.d0) * (0.538d0 - 43.d0 * DeltaTZ/(24.d0 * pi*pi)
-!     $     + (3.d0 * (DeltaTZ**2.d0)/(8.d0 * pi * pi))))
+      MT = Mtpole * (1.d0 -                                            !<---check expression.
+     $     (alphasmt * (5.d0 - 3.d0 * DeltaTZ)/(3.d0*Pi)) -
+     $     (alphasmt**2.d0) * (0.538d0 - 43.d0 * DeltaTZ/(24.d0 * pi*pi)
+     $     + (3.d0 * (DeltaTZ**2.d0)/(8.d0 * pi * pi))))
+      print*,MT,"DR mass"
 
 
 !!------------------------------
 !corrected by priyanka from paper 1703.03267v2 and 9803493
-      DeltaTZ = dLog(Mtpole/MZ)
-      MT= Mtpole *(1.d0+1/(16.d0*pi**2.0)*((16.d0*pi*alph/9.d0-
-     $     16.d0*pi*alphas/3.d0)*(4.d0+DeltaTZ))-1.d0/(16.d0*pi**2.d0)*
-     $     (alphas**2.d0/18.d0)*(2821.0+2028.0*DeltaTZ+
-     $      396.0*DeltaTZ**2.d0+16.0*pi**2.d0*(1.d0+2.d0*DeltaTZ)
-     $      -48.0*1.202057))
+!      DeltaTZ = dLog(Mtpole/MZ)
+!      MT= Mtpole *(1.d0+1/(16.d0*pi**2.0)*((16.d0*pi*alph/9.d0-
+!     $     16.d0*pi*alphas/3.d0)*(4.d0+DeltaTZ))-1.d0/(16.d0*pi**2.d0)*
+!     $     (alphas**2.d0/18.d0)*(2821.0+2028.0*DeltaTZ+
+!    $      396.0*DeltaTZ**2.d0+16.0*pi**2.d0*(1.d0+2.d0*DeltaTZ)
+!     $      -48.0*1.202057))
+ 
 
+!       print*, MT,"wrong one"
+!      DeltaTZ = 2.0*dLog(MZ/Mtpole)
+!      MT= Mtpole *(1.0-1.333*(4.0+3.0*DeltaTZ)*(alphas/(4.0*pi))
+!     $    - 0.444*(4.0+3.0*DeltaTZ)*(alph/(4.0*pi)) - (191.114 
+!     $   +118.444*DeltaTZ+23.33*DeltaTZ**2.d0)*(alphas/(4.0*pi))**2.d0)
+!      print*,MT,"right one MS bar"
 !--------------------------------
 
       mTaupoledrbar = mTaupole * (1.d0 - (3.d0/32.d0) * (alph1tz - 
@@ -891,7 +899,9 @@ c$$$      vevin =  246.d0
 
 !--------------------------------------
 !corrected by priyanka
-      vevin =  dsqrt(MZ*MZ*(((1-sinsqtw)*sinsqtw)/(pi*alph)))
+      gpmzsq=4*pi*alph/(ctw**2.d0)
+      g2sq = 4*pi*alph/sinsqtw
+      vevin =  dsqrt(4.0*MZ*MZ/(g2sq+gpmzsq))
 
 !--------------------------------------
 
@@ -968,10 +978,12 @@ c$$$      yuin(3,3) = (MTpole*VCKM(3,3))/(4.d0*pi*vevsc)
 !-------------------------------------------------------
 !corrected by priyanka ..SM thresholds are added here
 
-      alph1in= (5.d0/3.d0)*alph/(ctw**2.d0*(4.d0 * pi))
-      alph2in= alph/(sinsqtw*(4.d0 * pi))
-      alph3in= alphas/(4.d0 * pi)
+      alph1in= (5.d0/3.d0)*alph/(ctw**2.d0)
+      alph2in= alph/(sinsqtw)
+      alph3in= alphas
 
+      print*,"fermion mass mt mb mtau and alpha123 ",MT,mtau,mb,
+     $       alph1in,alph2in,alph3in,vevin,1/alph,sinsqtw
 !      alph3in = 2.d0*pi*alphin3Mz/(2.d0*pi+alphin3Mz*(2.d0/3.d0)*
 !     $          log(Mtpole/Mz))
 !      alph2in = 2.d0*pi*alphin2Mz/(2.d0*pi+alphin2Mz*(log(Mtpole/Mz)+
