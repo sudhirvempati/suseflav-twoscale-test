@@ -1692,7 +1692,7 @@ C****C
      $     mh0sq,mhu0sq,mhpmsq,mA0sq
           
       common/finetuning/delta1z,delta2z
-      common/deltarho/ piwwT0SM,pizzT0SM,pizzt,piwwt,MWsqpole_MZ
+      common/deltarho/ piwwT0SM,pizzT0SM,pizztSM,piwwtSM,MWsqpole_MZ
 !--------------------
       EXTERNAL topcorSM, bottomcorSM, taucorSM,pizzSM, piwwSM
       EXTERNAL strongcouplingSM, emcouplingSM, vevewsb, S2ThetaWSM,
@@ -1889,10 +1889,10 @@ c$$$      print*,"flags, flags2tw = ", flags, flags2tw
 
       q = MZ
 
-      call bottomcor(p,q,g,gp,g3,M3tmz,mt_mz,mb_mz,tanbeta,
-     $     yuMZ,ydMZ,SUeggz,SDeggz,SLeggz,SNeggz,Negz,Cegz,
-     $     mh0sqz,mhu0sqz,mhpmsqz,mA0sqz,ONz,OCLz,
-     $     OCRz,sinsqthw_mz,mbcor,mbdrbar)
+      call bottomcorSM(p,q,g,gp,g3,M3tz,mt_mz,mb_mz,tanbeta,
+     $     yuMZ,ydMZ,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,
+     $     mh0sq,mhu0sq,mhpmsq,mA0sq,ON,OCL,
+     $     OCR,sinsqthw_mz,mbcor,mbdrbar)
       
 
 !----------------------------------------------------------------------------

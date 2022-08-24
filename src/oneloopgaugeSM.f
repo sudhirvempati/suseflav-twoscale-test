@@ -50,7 +50,7 @@ C****C
 !                  Gauge Coupling Radiative Correction
 !-------------------------------------------------------------------------
 
-      subroutine strongcoupling(q,g3,mt,M3tz,SUegg,SDegg,
+      subroutine strongcouplingSM(q,g3,mt,M3tz,SUegg,SDegg,
      $     alphas1,delalphas)
       
       integer i, j
@@ -126,7 +126,7 @@ c$$$      mdown(3,2) = dsqrt(SDegg(1))
 !------------------------------------------
       
       return     
-      end subroutine strongcoupling
+      end subroutine strongcouplingSM
 
 !======================================================================================
 
@@ -136,7 +136,7 @@ c$$$   DRbar scheme at scale Q. From hep-ph/9606211. Input empirical value of
 c$$$   alpha at MZ external momentum....
 !-----------------------------------------------------------------------------------
       
-      subroutine emcoupling(q,alphaDR,mt,SUegg,SDegg,SLegg,Ceg,
+      subroutine emcouplingSM(q,alphaDR,mt,SUegg,SDegg,SLegg,Ceg,
      $     mHpmsq,alphaem,delalphem)
 
       
@@ -246,133 +246,133 @@ c$$$      print*,"alphaem = ", alphaem
       
 !------------------------------------------------
       return
-      end subroutine emcoupling
+      end subroutine emcouplingSM
 
 !-----------------------------------------------------------------------------
 
       
 !=============================================================================
 
-      subroutine gluinose(p,q,g3,mt,mB,SUegg,SDegg,
-     $     deltagluino)
+!      subroutine gluinose(p,q,g3,mt,mB,SUegg,SDegg,
+!     $     deltagluino)
 
-      
-      implicit none
-      integer i
-      double precision mT, mB
-      double precision p,q,g3,deltagluino
-      
-      DOUBLE PRECISION SUegg(6),SDegg(6)
+!      
+!      implicit none
+!      integer i
+!      double precision mT, mB
+!      double precision p,q,g3,deltagluino
+!      
+!      DOUBLE PRECISION SUegg(6),SDegg(6)
 
-      
-      double precision thetat,thetab,thetatau
-      double precision thetac,thetas,thetamu
-      double precision thetau,thetad,thetae
-      
-      double precision msup(2),msdown(2),mscharm(2)
-      double precision msstrange(2),msbot(2),mstop(2)
-      double precision b1mstop(2),b1msup(2),b1mscharm(2)
-      double precision b1msdown(2),b1msstrange(2),b1msbot(2)
-      double precision b0mstop(2),b0msbot(2),pi
-      
-      double precision delta,delsusy(2)
-      data delsusy/ 2 * 0.d0/, delta/ 0.d0/
+!      
+!      double precision thetat,thetab,thetatau
+!      double precision thetac,thetas,thetamu
+!      double precision thetau,thetad,thetae
+!      
+!      double precision msup(2),msdown(2),mscharm(2)
+!      double precision msstrange(2),msbot(2),mstop(2)
+!      double precision b1mstop(2),b1msup(2),b1mscharm(2)
+!      double precision b1msdown(2),b1msstrange(2),b1msbot(2)
+!      double precision b0mstop(2),b0msbot(2),pi
+!      
+!      double precision delta,delsusy(2)
+!      data delsusy/ 2 * 0.d0/, delta/ 0.d0/
 
-      common/sfmixing_susy/thetat,thetab,thetatau,thetac,thetas,thetamu,
-     $     thetau,thetad,thetae
-      
-!---------------------------------------------------------------------
-      
-      external b0,b1
-      
-      include 'stdinputs.h'
-      
-!---------------------------------------------------------------------
+!      common/sfmixing_susy/thetat,thetab,thetatau,thetac,thetas,thetamu,
+!     $     thetau,thetad,thetae
+!      
+!!---------------------------------------------------------------------
+!      
+!      external b0,b1
+!      
+!      include 'stdinputs.h'
+!      
+!!---------------------------------------------------------------------
 
-      pi = 4.d0 * datan(1.d0)
+!      pi = 4.d0 * datan(1.d0)
 
-      msup(2)    = dsqrt(SUegg(6)) 
-      msup(1)    = dsqrt(SUegg(5))
-      mscharm(2) = dsqrt(SUegg(4))
-      mscharm(1) = dsqrt(SUegg(3))
-      mstop(2)   = dsqrt(SUegg(2))
-      mstop(1)   = dsqrt(SUegg(1))
-      
-      msdown(2)    = dsqrt(SDegg(6)) 
-      msdown(1)    = dsqrt(SDegg(5))
-      msstrange(2) = dsqrt(SDegg(4))
-      msstrange(1) = dsqrt(SDegg(3))
-      msbot(2)     = dsqrt(SDegg(2))
-      msbot(1)     = dsqrt(SDegg(1))
-      
-c$$$      print*,"msup(1), msup(2) = ", msup(1), msup(2)
-c$$$      print*,"mscharm(1), mscharm(2) = ", mscharm(1), mscharm(2)
-c$$$      print*,"mstop(1), mstop(2) = ", mstop(1), mstop(2)
+!      msup(2)    = dsqrt(SUegg(6)) 
+!      msup(1)    = dsqrt(SUegg(5))
+!      mscharm(2) = dsqrt(SUegg(4))
+!      mscharm(1) = dsqrt(SUegg(3))
+!      mstop(2)   = dsqrt(SUegg(2))
+!      mstop(1)   = dsqrt(SUegg(1))
+!      
+!      msdown(2)    = dsqrt(SDegg(6)) 
+!      msdown(1)    = dsqrt(SDegg(5))
+!      msstrange(2) = dsqrt(SDegg(4))
+!      msstrange(1) = dsqrt(SDegg(3))
+!      msbot(2)     = dsqrt(SDegg(2))
+!      msbot(1)     = dsqrt(SDegg(1))
+!      
+!c$$$      print*,"msup(1), msup(2) = ", msup(1), msup(2)
+!c$$$      print*,"mscharm(1), mscharm(2) = ", mscharm(1), mscharm(2)
+!c$$$      print*,"mstop(1), mstop(2) = ", mstop(1), mstop(2)
 
-!------------------------------------------------
-      loopi: do i = 1, 2
-      
-      call b1(p,muq,msup(i),q,b1msup(i))
-      call b1(p,mc,mscharm(i),q,b1mscharm(i))
-      call b1(p,mt,mstop(i),q,b1mstop(i))
-      call b1(p,md,msdown(i),q,b1msdown(i))
-      call b1(p,ms,msstrange(i),q,b1msstrange(i))
-      call b1(p,mb,msbot(i),q,b1msbot(i))
-      
-      call b0(p,mt,mstop(i),q,b0mstop(i))
-      call b0(p,mb,msbot(i),q,b0msbot(i))
-      
-      enddo loopi
-      
-!--------------------------------------------------
+!!------------------------------------------------
+!      loopi: do i = 1, 2
+!      
+!      call b1(p,muq,msup(i),q,b1msup(i))
+!      call b1(p,mc,mscharm(i),q,b1mscharm(i))
+!      call b1(p,mt,mstop(i),q,b1mstop(i))
+!      call b1(p,md,msdown(i),q,b1msdown(i))
+!      call b1(p,ms,msstrange(i),q,b1msstrange(i))
+!      call b1(p,mb,msbot(i),q,b1msbot(i))
+!      
+!      call b0(p,mt,mstop(i),q,b0mstop(i))
+!      call b0(p,mb,msbot(i),q,b0msbot(i))
+!      
+!      enddo loopi
+!      
+!!--------------------------------------------------
 
-      delta = 15.d0 + 9.d0 * dlog((q*q)/(p*p))
-      
-!      print*,"delta1 = " , delta
-     
-C     Quark/squark correction
-!----------------------------------
-      
-      delsusy(1) = (b1msup(1) + b1mscharm(1) + b1mstop(1) + 
-     $     b1msdown(1) + b1msstrange(1) + b1msbot(1))
+!      delta = 15.d0 + 9.d0 * dlog((q*q)/(p*p))
+!      
+!!      print*,"delta1 = " , delta
+!     
+!C     Quark/squark correction
+!!----------------------------------
+!      
+!      delsusy(1) = (b1msup(1) + b1mscharm(1) + b1mstop(1) + 
+!     $     b1msdown(1) + b1msstrange(1) + b1msbot(1))
 
-      delsusy(2) = (b1msup(2) + b1mscharm(2) + b1mstop(2) + 
-     $     b1msdown(2) + b1msstrange(2) + b1msbot(2))
-      
-      
-      delta = delta - (delsusy(1) + delsusy(2))
-      
+!      delsusy(2) = (b1msup(2) + b1mscharm(2) + b1mstop(2) + 
+!     $     b1msdown(2) + b1msstrange(2) + b1msbot(2))
+!      
+!      
+!      delta = delta - (delsusy(1) + delsusy(2))
+!      
 
-c$$$      print*,"delta, delsusy(1), delsusy(2) = ", delta, delsusy(1), 
-c$$$     $     delsusy(2)
+!c$$$      print*,"delta, delsusy(1), delsusy(2) = ", delta, delsusy(1), 
+!c$$$     $     delsusy(2)
 
-C     Third family mixing contribution
-!-------------------------------------------
-      
-      delta = delta - mt * sin(2.d0 * thetat) * 
-     $     ((b0mstop(1) - b0mstop(2))/p)
-      
-      delta = delta - mb * sin(2.d0 * thetab) * 
-     $     ((b0msbot(1) - b0msbot(2))/p)
+!C     Third family mixing contribution
+!!-------------------------------------------
+!      
+!      delta = delta - mt * sin(2.d0 * thetat) * 
+!     $     ((b0mstop(1) - b0mstop(2))/p)
+!      
+!      delta = delta - mb * sin(2.d0 * thetab) * 
+!     $     ((b0msbot(1) - b0msbot(2))/p)
 
-c$$$      delta = delta + mt * sin(2.d0 * thetat) * 
-c$$$     $     ((b0mstop(1) - b0mstop(2))/p)
-      
-!      print*,"deltatop = ", delta
+!c$$$      delta = delta + mt * sin(2.d0 * thetat) * 
+!c$$$     $     ((b0mstop(1) - b0mstop(2))/p)
+!      
+!!      print*,"deltatop = ", delta
 
-c$$$      delta = delta + mb * sin(2.d0 * thetab) * 
-c$$$     $     ((b0msbot(1) - b0msbot(2))/p)
+!c$$$      delta = delta + mb * sin(2.d0 * thetab) * 
+!c$$$     $     ((b0msbot(1) - b0msbot(2))/p)
 
-!      print*,"deltabtm = ", delta
+!!      print*,"deltabtm = ", delta
 
-!      deltagluino = - delta * p * g3 * g3/(16.d0 * pi * pi)
+!!      deltagluino = - delta * p * g3 * g3/(16.d0 * pi * pi)
 
-      deltagluino =  delta * g3 * g3/(16.d0 * pi * pi)
-     
-!---------------------------------------------- 
-      return     
-      end subroutine gluinose
+!      deltagluino =  delta * g3 * g3/(16.d0 * pi * pi)
+!     
+!!---------------------------------------------- 
+!      return     
+!      end subroutine gluinose
 
-!======================================================================================
-      
-      
+!!======================================================================================
+!      
+!      

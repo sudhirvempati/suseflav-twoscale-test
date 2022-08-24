@@ -87,10 +87,6 @@ C     AUTHOR:-Debtosh Chowdhury,Raghuveer Garani & Sudhir K Vempati         MODI
       CHARACTER*100 flags
       DOUBLE PRECISION e1
       double precision yy(126),yy_d(126),MX
-      double precision fu(3),fd(3),fe(3),VCKMGUT(3,3),UQu(3,3)
-      double precision UUT(3,3),UQd(3,3),UDT(3,3),UE(3,3),ULT(3,3)
-      double precision UQdT(3,3)
-      double precision alphgut1,alphgut2,alphgut3,vev1gut,vevgut2
       data yy/126 * 0.d0/, yy_d/126 * 0.d0/
       double precision mQ0(3,3),mU0(3,3),mD0(3,3),mL0(3,3),mE0(3,3)
       double precision mh10,mh20,mSQRG(3,3),mSURG(3,3)
@@ -157,21 +153,8 @@ C     AUTHOR:-Debtosh Chowdhury,Raghuveer Garani & Sudhir K Vempati         MODI
 
 !--GMSB
       double precision gmsbsusyb, gmsbmess,nhat,gr
-      DOUBLE PRECISION:: b1(3),b2(3,3),c2(3,3),msusyint,tqint
-      DOUBLE PRECISION MHpole
 
-      Double precision alphms3,alphms2,alphms1,alphdr3,alphdr2,alphdr1
-      Double precision deltaalph3,deltaalph2,deltaalph1,alph3th
-      Double precision alph2th,alph1th
-      double precision alph1msusy,alph2msusy,alph3msusy,b1vec(10)
-      double precision b3vec(10),Massvec(10), deltasusy1,deltasusy2
-      double precision alphint1,alphint2,alphint3,b1vecint(10)
-      Double precision b2vec(10),deltasusy3,b2vecint(10),deltasusy2int
-      double precision b3vecint(10),Massvecint(10),deltasusy1int
-      double precision deltasusy3int,alphmsusyd2,alphmsusyd3
-      Double precision alphintd1,alphintd2,alphintd3,alphmsusyd1
 !----------------
-      common/bcoeff/b1,b2,c2
       common/gmsbinputs/ gmsbsusyb, gmsbmess,gr,nhat
       COMMON/rgeyy/yy_d
       common/unif/ e1,yukgut
@@ -199,7 +182,6 @@ C     AUTHOR:-Debtosh Chowdhury,Raghuveer Garani & Sudhir K Vempati         MODI
       common/unifs/fuscale
 
       common/VCKMparam/ VCKM
-      common/mini_split/msusyint
 
 !     common/rgeinput/M10,M20,M30,MX,Murka,M_UNI
 
@@ -221,7 +203,7 @@ C     AUTHOR:-Debtosh Chowdhury,Raghuveer Garani & Sudhir K Vempati         MODI
       include 'stdinputs.h'
 
 !----------------------------------------------------------------
-!       write(*,*)"msusyint",msusyint
+
 !      fuscale = 0
 
       pi = 4.d0*datan(1.d0)
@@ -229,7 +211,7 @@ C     AUTHOR:-Debtosh Chowdhury,Raghuveer Garani & Sudhir K Vempati         MODI
 !      UPMNS(1,3) = ue3
 
       beta = datan(tanbeta)
-      MHpole= 125.18d0
+
       Mpl = 5.d18
       MZ = MZpole 
 
@@ -241,7 +223,7 @@ C       ================
 
       tZ    =  dLog(MX**2.d0/MZ**2.d0)
       mtscale = dlog(MX**2.d0/mtpole**2.d0)
-      tqint = dLog(MX**2.d0/msusyint**2.d0)
+
 
       tq0   =  dLog(MX**2.d0/msusy**2.d0)
 
@@ -301,49 +283,7 @@ C-----------------------------
       yy_sm(i0+3 + i) = yein(2,i)
       yy_sm(i0+6 + i) = yein(3,i)
       enddo inp3
-!============================================================================
-!     mssm gauge coupling running from Mz to m_susy with SM thershold corrections
-!============================================================================ 
-!----------------------------------------------------------
-!   In MS bar
-!  alpha1 = 0.01694, alpha1=5*alphaem/(3*cossqtw), where alphaem=1/127.918
-!  alpha2 = 0.033842, alpha2=alphem/sinsqtw 
-!  alpha3 = 0.1181
-!  alph3,alph2,alph1 are at MZ in DR scheme.
-! MS bar to DR bar conversion factor delta = -C(G)/(12*pi), for SU(3) C(G)=3,SU(2) C(G)=2, U(1) C(G)=0
-!  relation alphaDR=alphaMS/(1+delta*alphaMS)
-!---------------------------------------------------------
-!      alphms3 = alph3in
-!      alphms2 = alph2in
-!      alphms1 = alph1in
-!--------------------------------------------------------
-! MS bar to DR bar conversion--------------------------
-! ------------------------------------------------------
-!      alphdr3 = alphms3/(1.d0-alphms3/(4.d0*pi))   !alph3tz
-!      alphdr2 = alphms2/(1.d0-alphms2/(6.d0*pi)) !alph2tz
-!      alphdr1 = alphms1
 
-! Adding top quark thershould correction and higgs thershould correction in gauge coupling at Mz 
-! for top quark one loop gauge coiff. bi=(17/30,1,2/3)
-! for higgs one loop gauge coiff. bi=(1/10,1/6,0)
-!-------------------------------------------------------------------
-!      deltaalph3 = (alphdr3/(2.d0*pi))*((2.d0/3.d0)*Log(Mtpole/MZ))
-!      deltaalph2 = (alphdr2/(2.d0*pi))*(Log(Mtpole/MZ)+(1.d0/6.d0)*
-!     $             Log(MHpole/MZ))
-!      deltaalph1 = (alphdr1/(2.d0*pi))*((17.d0/30.d0)*
-!     $             Log(Mtpole/MZ)+(1.d0/10.d0)*Log(MHpole/MZ))
-
-!      alph3th = alphdr3/(1+deltaalph3)
-!      alph2th = alphdr2/(1+deltaalph2)
-!      alph1th = alphdr1/(1+deltaalph1)
-!      print*,"alpha3=",alph3th, "alpha2=",alph2th,"alpha1=",alph1th
-!      alph3in = alph3th/(4.d0 * pi)
-!      alph2in = alph2th/(4.d0 * pi)
-!      alph1in = alph1th/(4.d0 * pi)
-
-!      yy_sm(28) = alph3th/(4.d0 * pi)
-!      yy_sm(29) = alph2th/(4.d0 * pi)
-!      yy_sm(30) = alph1th/(4.d0 * pi)
 
       yy_sm(28) = alph3in
       yy_sm(29) = alph2in
@@ -572,35 +512,12 @@ c$$$  print*,"vev2 = ", yy(126)
 c$$$  print*,"vev1 = ", yy(125)
 
 !============================================================================
-!     mssm gauge coupling running from m_susy to MGUT
+!     mssm gauge coupling running from m_susy to MR1
 !============================================================================
 
 c------------------------------------------------------------------------
 c	           calling the integrator RK4ROUTINE
 c------------------------------------------------------------------------
-      itcountif:If(itcount .eq. 1)then
-
-      b1(1)=33.d0/5.d0
-      b1(2)=1.d0
-      b1(3)=-3.d0
-      b2(1,1)=199.d0/25.d0
-      b2(1,2)=27.d0/5.d0
-      b2(1,3)=88.d0/5.d0
-      b2(2,1)=9.d0/5.d0
-      b2(2,2)=25.d0
-      b2(2,3)=24.d0
-      b2(3,1)=11.d0/5.d0
-      b2(3,2)=9.d0
-      b2(3,3)=14.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.d0
-      c2(2,2)=6.d0
-      c2(2,3)=2.d0
-      c2(3,1)=4.d0
-      c2(3,2)=4.d0
-      c2(3,3)=0.d0
 
       n0 = 126
 
@@ -638,7 +555,7 @@ c------------------------------------------------------------------------
       h1   =  -1.d-4
       hmin =  1.d-10
       eps  =  1.d-6
-!----------running from Mz to mgut--------
+
 
       call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,QMSRK4,
      $     check)
@@ -655,275 +572,9 @@ c------------------------------------------------------------------------
 
 !     print*,"*********Mz --> heaviest rhn scale  done***********"
 
-       else itcountif
-
-!=====================================
-! -----running from Mz to msusy-------
-!=====================================
-      n0 = 126
-      x2 = tq0
-      x1 = tz
-!      If(x1 .eq. tq0 .and. x2 .eq. tqint)then
- 
-
-      b1(1)=79.d0/15.d0
-      b1(2)=-1.d0/3.d0
-      b1(3)=-13.d0/3.d0
-      b2(1,1)=407.d0/75.d0
-      b2(1,2)=21.d0/5.d0
-      b2(1,3)=176.d0/15.d0
-      b2(2,1)=7.d0/5.d0
-      b2(2,2)=89.d0/3.d0
-      b2(2,3)=16.d0
-      b2(3,1)=22.d0/15.d0
-      b2(3,2)=6.d0
-      b2(3,3)=58.d0/3.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.0d0
-      c2(2,2)=6.0d0
-      c2(2,3)=2.0d0
-      c2(3,1)=4.0d0
-      c2(3,2)=4.0d0
-      c2(3,3)=0.0d0
-    
-!      endif
-      
-
-      h1   =  -1.d-4
-      hmin =  1.d-10
-      eps  =  1.d-6
-
-!      call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmgaugergevev,
-!     $     QMSRK4,check)
-
-      call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,
-     $     QMSRK4,check)
 
 
-      if(check.eq.100)then
-         Print*, '2variable underflow '
-         return
-      endif
 
-      if(maxval(yy(1:30)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         Print*, "NPERTYUK"
-         return
-      endif
-!===============================================
-!----msusy threshould----------------------------
-!===============================================
-!      mtRsq = (SUegg(1)+SUegg(2))/2.d0
-!      mtR = Sqrt(mSURG(3,3))
-!      mbRsq = (SDegg(1)+SDegg(2))/2.d0 
-!      mbR = Sqrt(mbRsq)
-!      mQ3 = Sqrt((mtRsq+mbRsq)/2.d0)
-!      mtauRsq = (SLegg(1)+SLegg(2))/2.d0
-!      mtauR = Sqrt(mtauRsq)
-!      mL3 = Sqrt((mtauRsq+SNegg(1))/2.d0)
-!      higgsino = mur
-!      MA = dsqrt(mA0sq)
-!      Wino = M2tz
-!      gluino =M3tz  
-      
-      alph1msusy=yy(121)*(4.d0*pi)
-      alph2msusy=yy(120)*(4.d0*pi)
-      alph3msusy=yy(119)*(4.d0*pi)
-
-      b1vec = (/ 1.0d0/30.0d0, 4.0d0/15.0d0, 
-     $        1.0d0/15.0d0,1.0d0/10.0d0,  1.0d0/5.0d0, 
-     $       2.0d0/5.0d0, 1.0d0/10.0d0,1.0d0/10.0d0, 0.0d0,0.0d0/)
-
-      b2vec = (/1.0d0/2.0d0,0.0d0,0.0d0,1.0d0/6.0d0,
-     $         0.0d0,2.0d0/3.0d0,1.0d0/6.0d0,1.0d0/6.0d0,
-     $         4.0d0/3.0d0,0.0d0/)
-
-      b3vec=(/1.0d0/3.0d0,1.0d0/6.0d0,1.0d0/6.0d0,
-     $0.0d0,0.0d0,0.0d0,0.0d0,0.0d0,0.0d0,2.0d0/)
-!      Print*,"mQ3=",mQ3,mtR,mbR,mL3,mtauR,higgsino,
-!     $     MA,Wino,gluino
-      Massvec=(/Sqrt(abs(mSQRG(3,3))),Sqrt(abs(mSURG(3,3))),
-     $        Sqrt(abs(mSDRG(3,3))),Sqrt(abs(mSLRG(3,3))),
-     $        Sqrt(abs(mSERG(3,3))),mur,Sqrt(abs(mh1mz)),
-     $        Sqrt(abs(mh2mz)),M2tz,M3tz/)
-
-      deltasusy1=1.0d0/(2.0d0*Pi)*DOT_product(b1vec,
-     $Log(Massvec/msusy))
-      deltasusy2=1.0d0/(2.0d0*Pi)*DOT_product(b2vec,
-     $Log(Massvec/msusy))
-      deltasusy3=1.0d0/(2.0d0*Pi)*DOT_product(b3vec,
-     $Log(Massvec/msusy))
-
-!      print*,"deltasusy",deltasusy1,deltasusy2,deltasusy3
-!      print*,"deltasplit",deltasusy1int,deltasusy2int,deltasusy3int
-
-
-!---------------------------------------------------------------
-!---Threchold correction of gauge coupling at m_susy scale
-!---------------------------------------------------------------
-      yy(119) = (alph3msusy/(1.0d0+alph3msusy*deltasusy3))/(4.d0*pi)
-      yy(120) = (alph2msusy/(1.0d0+alph2msusy*deltasusy2))/(4.d0*pi)
-      yy(121) = (alph1msusy/(1.0d0+alph1msusy*deltasusy1))/(4.d0*pi)
-
-!====================================================
-!-----rge runing from msusy to minisplit------------
-!====================================================
-      do i = 1,126
-      yy(i) = yy(i)
-      enddo 
-
-      n0 = 126
-      x2 = tqint
-      x1 = tq0
-!      If(x1 .eq. tq0 .and. x2 .eq. tqint)then
- 
-
-      b1(1)=79.d0/15.d0
-      b1(2)=-1.d0/3.d0
-      b1(3)=-13.d0/3.d0
-      b2(1,1)=407.d0/75.d0
-      b2(1,2)=21.d0/5.d0
-      b2(1,3)=176.d0/15.d0
-      b2(2,1)=7.d0/5.d0
-      b2(2,2)=89.d0/3.d0
-      b2(2,3)=16.d0
-      b2(3,1)=22.d0/15.d0
-      b2(3,2)=6.d0
-      b2(3,3)=58.d0/3.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.0d0
-      c2(2,2)=6.0d0
-      c2(2,3)=2.0d0
-      c2(3,1)=4.0d0
-      c2(3,2)=4.0d0
-      c2(3,3)=0.0d0
-    
-!      endif
-      
-
-      h1   =  -1.d-4
-      hmin =  1.d-10
-      eps  =  1.d-6
-
-!      call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmgaugergevev,
-!     $     QMSRK4,check)
-
-      call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,
-     $     QMSRK4,check)
-
-
-      if(check.eq.100)then
-         Print*, '2variable underflow '
-         return
-      endif
-
-      if(maxval(yy(1:30)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         Print*, "NPERTYUK"
-         return
-      endif
-
-!------------------------------------------------------------
-!--Threshold correction of gauge coupling at mini-split scale
-!------------------------------------------------------------    
-      alphint1 = yy(121)*4.d0*pi
-      alphint2 = yy(120)*4.d0*pi
-      alphint3 = yy(119)*4.d0*pi
-
-!      muRsq = (SUegg(3)+SUegg(4)+SUegg(5)+SUegg(6))/4.d0
-!      mu1R = Sqrt(muRsq)
-!      mdRsq = (SDegg(3)+SDegg(4)+SDegg(5)+SDegg(6))/4.d0
-!      mdR = Sqrt(mdRsq)
-!      mQ2 = Sqrt((muRsq+mdRsq)/2.d0)
-!      mlRsq = (SLegg(3)+SLegg(4)+SLegg(5)+SLegg(6))/4.d0
-!      mlR = Sqrt(mlRsq)
-!      mL2 = Sqrt((mlR+SNegg(2)+SNegg(3))/3.d0)
-
-      b1vecint=(/ 1.0d0/30.0d0,1.0d0/30.0d0, 4.0d0/15.0d0,4.0d0/15.0d0, 
-     $         1.0d0/15.0d0,1.0d0/15.0d0,1.0d0/10.0d0,1.0d0/10.0d0,
-     $         1.0d0/5.0d0,1.0d0/5.0d0/)
-
-      b2vecint = (/1.0d0/2.0d0,1.0d0/2.0d0,0.0d0,0.0d0,0.0d0,0.0d0,
-     $           1.0d0/6.0d0,1.0d0/6.0d0,0.0d0,0.0d0/)
-
-      b3vecint=(/1.0d0/3.0d0,1.0d0/3.0d0,1.0d0/6.0d0,1.0d0/6.0d0,
-     $         1.0d0/6.0d0,1.0d0/6.0d0,0.0d0,0.0d0,0.0d0,0.0d0/)
-
-      Massvecint=(/Sqrt(abs(mSQRG(2,2))),Sqrt(abs(mSQRG(1,1))),
-     $        Sqrt(abs(mSURG(2,2))),Sqrt(abs(mSURG(1,1))),
-     $        Sqrt(abs(mSDRG(2,2))),Sqrt(abs(mSDRG(1,1))),
-     $        Sqrt(abs(mSLRG(2,2))),Sqrt(abs(mSLRG(1,1))),
-     $        Sqrt(abs(mSERG(2,2))),Sqrt(abs(mSERG(1,1)))/)
-
-      deltasusy1int=1.0d0/(2.0d0*Pi)*DOT_product(b1vecint,
-     $Log(Massvecint/msusyint))
-      deltasusy2int=1.0d0/(2.0d0*Pi)*DOT_product(b2vecint,
-     $Log(Massvecint/msusyint))
-      deltasusy3int=1.0d0/(2.0d0*Pi)*DOT_product(b3vecint,
-     $Log(Massvecint/msusyint))
-
-
-      yy(121)=(alphint1/(1.0d0+alphint1*deltasusy1int))/(4.d0*pi)
-
-      yy(120)=(alphint2/(1.0d0+alphint2*deltasusy2int))/(4.d0*pi)
-
-      yy(119)=(alphint3/(1.0d0+alphint3*deltasusy3int))/(4.d0*pi)
-
-!==================================================
-!-------rge runing from Mnisplit to GUt-----------
-!==================================================
-      do i = 1,126
-      yy(i) = yy(i)
-      enddo 
-      n0 = 126
-
-      x2 = tpl
-      x1 = tqint
-      If(x1 .eq. tqint .and. x2 .eq. tpl)then
- 
-
-      b1(1)=33.d0/5.d0
-      b1(2)=1.d0
-      b1(3)=-3.d0
-      b2(1,1)=199.d0/25.d0
-      b2(1,2)=27.d0/5.d0
-      b2(1,3)=88.d0/5.d0
-      b2(2,1)=9.d0/5.d0
-      b2(2,2)=25.d0
-      b2(2,3)=24.d0
-      b2(3,1)=11.d0/5.d0
-      b2(3,2)=9.d0
-      b2(3,3)=14.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.d0
-      c2(2,2)=6.d0
-      c2(2,3)=2.d0
-      c2(3,1)=4.d0
-      c2(3,2)=4.d0
-      c2(3,3)=0.d0
-    
-      endif
-      h1   =  -1.d-4
-      hmin =  1.d-10
-      eps  =  1.d-6
-
-      call RK4ROUTINE(yy,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,
-     $     QMSRK4,check)
-
-      if(check.eq.100)then
-         Print*, '2variable underflow '
-         return
-      endif
-
-      if(maxval(yy(1:30)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         Print*, "NPERTYUK"
-         return
-      endif
-       endif itcountif
 !============================================================================
 !     	mssm gauge coupling running from MR3 to Mgut
 !============================================================================
@@ -1186,7 +837,9 @@ c$$$
 
       enddo  sm04
 
-
+      print*,"in runrge.f at M_{Pl} 4pi",yugut(3,3),ydgut(3,3),
+     $        yegut(3,3),yy(119)*4*pi,yy(120)*4*pi,yy(121)*4*pi,
+     $        itcount,msusy
 !------------------------------------------------------------------------------
 !     Picking unification scale : intersection of a1 and a2
 !------------------------------------------------------------------------------
@@ -1477,45 +1130,45 @@ c$$$     $             yuevT, 3, WORK, LWORK, INFO )
 
          nuaterms: if(model.eq.'CNUM')then
 
-            yy_d(37) = a0u11*yy_d(1)
-            yy_d(38) = a0u12*yy_d(2)
-            yy_d(39) = a0u13*yy_d(3)
-            yy_d(40) = a0u21*yy_d(4)
-            yy_d(41) = a0u22*yy_d(5)
-            yy_d(42) = a0u23*yy_d(6)
-            yy_d(43) = a0u31*yy_d(7)
-            yy_d(44) = a0u32*yy_d(8)
-            yy_d(45) = a0u33*yy_d(9)
+            yy_d(37) = a0u11
+            yy_d(38) = a0u12
+            yy_d(39) = a0u13
+            yy_d(40) = a0u21
+            yy_d(41) = a0u22
+            yy_d(42) = a0u23
+            yy_d(43) = a0u31
+            yy_d(44) = a0u32
+            yy_d(45) = a0u33
 
-            yy_d(46) = a0d11*yy_d(10)
-            yy_d(47) = a0d12*yy_d(11)
-            yy_d(48) = a0d13*yy_d(12)
-            yy_d(49) = a0d21*yy_d(13)
-            yy_d(50) = a0d22*yy_d(14)
-            yy_d(51) = a0d23*yy_d(15)
-            yy_d(52) = a0d31*yy_d(16)
-            yy_d(53) = a0d32*yy_d(17)
-            yy_d(54) = a0d33*yy_d(18)
+            yy_d(46) = a0d11
+            yy_d(47) = a0d12
+            yy_d(48) = a0d13
+            yy_d(49) = a0d21
+            yy_d(50) = a0d22
+            yy_d(51) = a0d23
+            yy_d(52) = a0d31
+            yy_d(53) = a0d32
+            yy_d(54) = a0d33
 
-            yy_d(55) = a0e11*yy_d(19)
-            yy_d(56) = a0e12*yy_d(20)
-            yy_d(57) = a0e13*yy_d(21)
-            yy_d(58) = a0e21*yy_d(22)
-            yy_d(59) = a0e22*yy_d(23)
-            yy_d(60) = a0e23*yy_d(24)
-            yy_d(61) = a0e31*yy_d(25)
-            yy_d(62) = a0e32*yy_d(26)
-            yy_d(63) = a0e33*yy_d(27)
+            yy_d(55) = a0e11
+            yy_d(56) = a0e12
+            yy_d(57) = a0e13
+            yy_d(58) = a0e21
+            yy_d(59) = a0e22
+            yy_d(60) = a0e23
+            yy_d(61) = a0e31
+            yy_d(62) = a0e32
+            yy_d(63) = a0e33
 
-            yy_d(64) = a0nu11*yy_d(28)
-            yy_d(65) = a0nu12*yy_d(29)
-            yy_d(66) = a0nu13*yy_d(30)
-            yy_d(67) = a0nu21*yy_d(31)
-            yy_d(68) = a0nu22*yy_d(32)
-            yy_d(69) = a0nu23*yy_d(33)
-            yy_d(70) = a0nu31*yy_d(34)
-            yy_d(71) = a0nu32*yy_d(35)
-            yy_d(72) = a0nu33*yy_d(36)
+            yy_d(64) = a0nu11
+            yy_d(65) = a0nu12
+            yy_d(66) = a0nu13
+            yy_d(67) = a0nu21
+            yy_d(68) = a0nu22
+            yy_d(69) = a0nu23
+            yy_d(70) = a0nu31
+            yy_d(71) = a0nu32
+            yy_d(72) = a0nu33
 
          endif nuaterms
 
@@ -1620,33 +1273,8 @@ c$$$     $             yuevT, 3, WORK, LWORK, INFO )
       endif gmsbBC
 
 !-----------------------Integrating Mgut->MR3
-!========================================================================
-!-------------itcount=1------runing from MGUt to msusy-------------------
-!========================================================================
-      gutitcount: if(itcount .eq. 1)then
-      n0 = 126
 
-      b1(1)=33.d0/5.d0
-      b1(2)=1.d0
-      b1(3)=-3.d0
-      b2(1,1)=199.d0/25.d0
-      b2(1,2)=27.d0/5.d0
-      b2(1,3)=88.d0/5.d0
-      b2(2,1)=9.d0/5.d0
-      b2(2,2)=25.d0
-      b2(2,3)=24.d0
-      b2(3,1)=11.d0/5.d0
-      b2(3,2)=9.d0
-      b2(3,3)=14.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.d0
-      c2(2,2)=6.d0
-      c2(2,3)=2.d0
-      c2(3,1)=4.d0
-      c2(3,2)=4.d0
-      c2(3,3)=0.d0
+      n0 = 126
 
       rhn0gutd: if(rhn.eq.0)then
          x2 = tq0
@@ -1689,144 +1317,9 @@ c$$$     $             yuevT, 3, WORK, LWORK, INFO )
          flags = "NPERTYUK"
          return
       endif
-!=================================================================
-!-----------itcount >1 ---runing mgut to minisplit---------------
-!================================================================= 
-      else gutitcount
 
-      n0 = 126
-      x2 = tqint
-      x1 = tpl
-
-      b1(1)=33.d0/5.d0
-      b1(2)=1.d0
-      b1(3)=-3.d0
-      b2(1,1)=199.d0/25.d0
-      b2(1,2)=27.d0/5.d0
-      b2(1,3)=88.d0/5.d0
-      b2(2,1)=9.d0/5.d0
-      b2(2,2)=25.d0
-      b2(2,3)=24.d0
-      b2(3,1)=11.d0/5.d0
-      b2(3,2)=9.d0
-      b2(3,3)=14.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.d0
-      c2(2,2)=6.d0
-      c2(2,3)=2.d0
-      c2(3,1)=4.d0
-      c2(3,2)=4.d0
-      c2(3,3)=0.d0
-
-      h1   =  1.d-4
-      hmin =  1.d-10
-      eps  =  1.d-6
-
-      if(maxval(yy_d(1:36)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         flags = "NPERTYUK"
-         return
-      endif
-
-      
-      call RK4ROUTINE(yy_d,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,
-     $     QMSRK4,check)
-      if(check.eq.100)then
-         flags = 'variable underflow '
-         return
-      endif
-
-      if(maxval(yy_d(1:36)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         flags = "NPERTYUK"
-         return
-      endif
-!================================================================
-!--------------remove threshould at minisplit---------
-!===============================================================
-
-      alphintd1 = yy_d(121)*4.d0*pi
-      alphintd2 = yy_d(120)*4.d0*pi
-      alphintd3 = yy_d(119)*4.d0*pi
-
-      yy_d(121)=(alphintd1/(1.0d0 - alphintd1*deltasusy1int))/(4.d0*pi)
-
-      yy_d(120)=(alphintd2/(1.0d0 - alphintd2*deltasusy2int))/(4.d0*pi)
-
-      yy_d(119)=(alphintd3/(1.0d0 - alphintd3*deltasusy3int))/(4.d0*pi)
-
-!==========runing from minisplit to msusy======================
-      do i=1,126
-      yy_d(i)=yy_d(i)
-      enddo
-
-      n0 = 126
-      x2 = tq0
-      x1 = tqint
-
-
-      b1(1)=79.d0/15.d0
-      b1(2)=-1.d0/3.d0
-      b1(3)=-13.d0/3.d0
-      b2(1,1)=407.d0/75.d0
-      b2(1,2)=21.d0/5.d0
-      b2(1,3)=176.d0/15.d0
-      b2(2,1)=7.d0/5.d0
-      b2(2,2)=89.d0/3.d0
-      b2(2,3)=16.d0
-      b2(3,1)=22.d0/15.d0
-      b2(3,2)=6.d0
-      b2(3,3)=58.d0/3.d0
-      c2(1,1)=26.d0/5.d0
-      c2(1,2)=14.d0/5.d0
-      c2(1,3)=18.d0/5.d0
-      c2(2,1)=6.0d0
-      c2(2,2)=6.0d0
-      c2(2,3)=2.0d0
-      c2(3,1)=4.0d0
-      c2(3,2)=4.0d0
-      c2(3,3)=0.0d0
-
-      h1   =  1.d-4
-      hmin =  1.d-10
-      eps  =  1.d-6
-
-      if(maxval(yy_d(1:36)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         flags = "NPERTYUK"
-         return
-      endif
-
-      
-      call RK4ROUTINE(yy_d,n0,x1,x2,eps,h1,hmin,nok,nbad,mssmrge,
-     $     QMSRK4,check)
-      if(check.eq.100)then
-         flags = 'variable underflow '
-         return
-      endif
-
-      if(maxval(yy_d(1:36)).gt.dsqrt(1.d0/(4.d0*pi)))then
-         flags = "NPERTYUK"
-         return
-      endif
-
-!================================================================
-!--------------remove threshould at msusy---------
-!===============================================================
-      alphmsusyd1 = yy_d(121)*4.d0*pi
-      alphmsusyd2 = yy_d(120)*4.d0*pi
-      alphmsusyd3 = yy_d(119)*4.d0*pi
-
-
-!      yy_d(119) = (alphmsusyd3/(1.0d0-alphmsusyd3*deltasusy1))/(4.d0*pi)
-!      yy_d(120) = (alphmsusyd2/(1.0d0-alphmsusyd2*deltasusy2))/(4.d0*pi)
-!      yy_d(121) = (alphmsusyd1/(1.0d0-alphmsusyd1*deltasusy1))/(4.d0*pi)
-
-      yy_d(119) =(alphmsusyd3/(1.0d0-alphmsusyd3*deltasusy3))/(4.d0*pi)
-      yy_d(120) =(alphmsusyd2/(1.0d0-alphmsusyd2*deltasusy2))/(4.d0*pi)
-      yy_d(121) =(alphmsusyd1/(1.0d0-alphmsusyd1*deltasusy1))/(4.d0*pi)
 !     print*,"***************Mgut --> heaviest rhn done ***********"
 
-       endif gutitcount
 
 !============================================================================
 !     mssm gauge coupling running from MR3 to MR2

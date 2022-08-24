@@ -29,7 +29,7 @@
 *
 *  RESULT
 *
-*   pizzTSM      - Z boson self energy SM
+*   pizzT      - Z boson self energy 
 *   piwwT      - W boson self energy
 *   piaaT      - Higgs boson A self energy  
 *   piHpHm     - Charged higgs H+ self energy  
@@ -38,7 +38,7 @@
 *
 *          SUBROUTINE pizz(p,q,g,mt,mb,mtau,tanbeta,mSQRG,mSDRG,mSURG,mSLRG,
 *     $     mSERG,AURG,ADRG,AERG,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,mh0sq,
-*     $     mhu0sq,mhpmsq,mA0sq,modmu,ON,OCL,OCR,pizzTSM)
+*     $     mhu0sq,mhpmsq,mA0sq,modmu,ON,OCL,OCR,pizzT)
 *       
 *           SUBROUTINE piww(p,q,g,mt,mb,mtau,tanbeta,mSQRG,mSDRG,mSURG,mSLRG,
 *     $     mSERG,AURG,ADRG,AERG,SUegg,SDegg,SLegg,SNegg,Neg,Ceg,mh0sq,
@@ -86,9 +86,9 @@ C
 C\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-      SUBROUTINE pizzSM(p,q,g,mt,mb,mtau,tanbeta,
+      SUBROUTINE pizz(p,q,g,mt,mb,mtau,tanbeta,
      $     SUegg,SDegg,SLegg,SNegg,Neg,Ceg,mh0sq,
-     $     mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,sinsqthw,pizzTSM)
+     $     mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,sinsqthw,pizzT)
 
       IMPLICIT NONE 
 
@@ -109,7 +109,7 @@ C\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
       DOUBLE PRECISION up(2), dn(2), el(2)
       DOUBLE PRECISION top(2, 2), btm(2, 2), tau(2, 2)
 
-      DOUBLE PRECISION pizzTSM,ans,sinsqthw,g
+      DOUBLE PRECISION pizzT,ans,sinsqthw,g
       DOUBLE PRECISION p,q,mh0,mHu0,mHpm,mA0          
       DOUBLE PRECISION b0MwMw,b0mzmh0,b0mzmHu0
       DOUBLE PRECISION alpha,beta
@@ -246,7 +246,7 @@ c$$$       common/sinsq_mz/sinsqthw_mz
       ynuL = -1.d0 
 
      
-      pizzTSM = 0.d0
+      pizzT = 0.d0
 
 c$$$      muR = dsqrt(SUegg(6)) 
 c$$$      muL = dsqrt(SUegg(5))
@@ -697,17 +697,16 @@ c$$$      if(rhn.eq.1)then
 c$$$         sleps = 0.d0
 c$$$      endif
 
-!      ans = smp + charginoterm + neutterm + sumHz + smHz + susyp 
-!     $     + sleps
-      ans = smp +  sumHz + smHz 
+      ans = charginoterm + neutterm + susyp + sleps
+!      ans = smp +  sumHz + smHz 
 
-      pizzTSM = ans *
+      pizzT = ans *
      $     (g**2.d0)/((costhw**2.d0) * 16.d0 *(pi**2.d0))
 
 
       RETURN
 
-      END SUBROUTINE pizzSM
+      END SUBROUTINE pizz
 
 C=========================================================================================
 C     TRANSVERSE PART OF W-boson self energy
@@ -719,9 +718,9 @@ C     piww is checked @ 09:00 on 02/06/2010.
 C
 C\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-      SUBROUTINE piwwSM(p,q,g,mt,mb,mtau,tanbeta,SUegg,SDegg,SLegg,
+      SUBROUTINE piww(p,q,g,mt,mb,mtau,tanbeta,SUegg,SDegg,SLegg,
      $     SNegg,Neg,Ceg,mh0sq,
-     $     mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,sinsqthw,piwwTSM)
+     $     mhu0sq,mhpmsq,mA0sq,ON,OCL,OCR,sinsqthw,piwwT)
 
       IMPLICIT NONE 
 
@@ -742,7 +741,7 @@ C\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 c$$$      DOUBLE PRECISION up(2), dn(2), el(2)
 c$$$      DOUBLE PRECISION top(2, 2), btm(2, 2), tau(2, 2)
 
-      DOUBLE PRECISION piwwTSM,ans,sinsqthw,g
+      DOUBLE PRECISION piwwT,ans,sinsqthw,g
       DOUBLE PRECISION p,q,mh0,mHu0,mHpm,mA0          
       DOUBLE PRECISION b0mhMw,b0MzMw,b0Mw0,b0mHuMw,b0mAmHpm
       DOUBLE PRECISION alpha,beta
@@ -848,7 +847,7 @@ c$$$      DOUBLE PRECISION sinthetae
       yeR = 2.d0 
       ynuL = -1.d0
 
-      piwwTSM = 0.d0
+      piwwT = 0.d0
 
 !----------------------------------------------------------------------------
 
@@ -1225,16 +1224,16 @@ c$$$      if(rhn.eq.1)then
 c$$$         sleps = 0.d0
 c$$$      endif
 
-!      ans =  sumHz + smHz  + npchino + susyp + smp + sleps
-      ans =  sumHz + smHz + smp
+      ans =  npchino + susyp + sleps
+!      ans =  sumHz + smHz + smp
 
-      piwwTSM =  ans * ((g**2.d0)/(16.d0 * (pi**2.d0))) 
+      piwwT =  ans * ((g**2.d0)/(16.d0 * (pi**2.d0))) 
 
 
 
       RETURN
 
-      END SUBROUTINE piwwSM
+      END SUBROUTINE piww
 
 C=============================================================================================
 
@@ -2685,7 +2684,7 @@ C===============================================================================
 
 !===============================================================================
 
-      subroutine pizgammaSM(p,q,g,mt,mb,mtau,SUegg,SDegg,
+      subroutine pizgamma(p,q,g,mt,mb,mtau,SUegg,SDegg,
      $     SLegg,Ceg,mhpmsq,OCL,OCR,alphhat,result)
 
       implicit none
@@ -2940,12 +2939,11 @@ C===============================================================================
      $     (geL * ssqthe - csqthe * geR) * b22tmeRmeR)))))
 
 !------------------------
-      result = (((smterm - higgsterm )*e*g)/(16.d0 * pi*pi*costhw))
-!      result = (((smterm - higgsterm + charginoterm - 
-!     $     sfermionterm)*e*g)/(16.d0 * pi*pi*costhw))
+!      result = (((smterm - higgsterm )*e*g)/(16.d0 * pi*pi*costhw))
+      result = (((charginoterm-sfermionterm)*e*g)/(16.d0*pi*pi*costhw))
 
       return
-      end subroutine pizgammaSM
+      end subroutine pizgamma
 
-!!================================================================================
+!================================================================================
 

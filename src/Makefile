@@ -19,17 +19,18 @@ else
 endif
 
 FUNDOBJS = runrges.o  softspectrum.o  mueconvernew.o  SuSemain.o \
-math.o  mssmrge.o  smrge.o ewsbiterate.o oneloopPV.o \
+math.o  mssmrge.o  smrge.o  ewsbiterate.o  oneloopPV.o \
 oneloopselfenergy.o  onelooptadpole.o  oneloophiggs.o \
-oneloopsfermion.o oneloopfermion.o  oneloopgauge.o \
+oneloopsfermion.o  oneloopfermion.o  oneloopgauge.o \
 oneloopneutralino.o  oneloopchargino.o  spectrumtl.o \
-rgeiterate.o  slha.o slha2.o  sinsqthw.o  bsg.o CEigensystem.o \
-HEigensystem.o SVD.o twoloophiggs.o ProtondecaySU5goto.o
+oneloopselfenergySM.o  oneloopfermionSM.o  oneloopgaugeSM.o \
+rgeiterate.o  slha.o  slha2.o  sinsqthw.o  bsg.o  CEigensystem.o \
+HEigensystem.o SVD.o twoloophiggs.o ProtondecaySU5goto.o   sinsqthwSM.o
 
 
 .SUFFIXES : .o .f .F .a
 
-
+#oneloopselfenergySM.o oneloopfermionSM.o oneloopgaugeSM.o sinsqthwSM.o \
 # let make now that objs depend on inputfiles. make knows what to do then.
 # the space before $(FC) MUST BE A TAB!!!
 
